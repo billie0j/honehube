@@ -7,6 +7,33 @@
   <link rel="stylesheet" href="css/style.css" />
   <!-- Google reCAPTCHA -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <style>
+    .slideshow-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+    .slide.active {
+      opacity: 1;
+    }
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
 </head>
 <body>
 
@@ -14,11 +41,16 @@
 
 <!-- Full Screen Background with Login Form Overlay -->
 <div class="login-page-wrapper" style="position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-  <!-- Full Screen Background Image -->
-  <div class="login-background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
-    <img src="images/building.png" alt="Campus Building" style="width: 100%; height: 100%; object-fit: cover;" />
+  <!-- Slideshow Background -->
+  <div class="slideshow-container">
+    <div class="slide active">
+      <img src="images/building.png" alt="Evlyne Hone College Building" />
+    </div>
+    <div class="slide">
+      <img src="images/market.jpg" alt="Campus Market" />
+    </div>
     <!-- Dark overlay for better text readability -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);"></div>
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
   </div>
 
   <!-- Login Form Centered -->
@@ -347,6 +379,19 @@
   }
 
   loadListings();
+
+  // Background Image Slideshow
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  
+  function showNextSlide() {
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add('active');
+  }
+  
+  // Change slide every 5 seconds
+  setInterval(showNextSlide, 5000);
 </script>
 </body>
 </html>
