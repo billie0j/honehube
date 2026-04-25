@@ -60,7 +60,7 @@ function registerUser($db) {
     }
     
     // Check if user already exists
-    $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt = $db->prepare("SELECT user_id FROM users WHERE email = ?");
     $stmt->execute([$email]);
     if ($stmt->fetch()) {
         sendJSON(['success' => false, 'message' => 'Unable to create account. Please try a different email.'], 409);
@@ -71,18 +71,18 @@ function registerUser($db) {
     
     // Insert user
     try {
-        $stmt = $db->prepare("INSERT INTO users (name, email, password, student_id) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$name, $email, $hashedPassword, $studentId]);
+        $stmt = $db->prepare("INSERT INTO users (full_name, email, password, role) VALUES (?, ?, ?, 'student')");
+        $stmt->execute([$name, $email, $hashedPassword]);
         
         $userId = $db->lastInsertId();
         
         // Get user data
-        $stmt = $db->prepare("SELECT id, name, email, student_id, role, created_at FROM users WHERE id = ?");
+        $stmt = $db->prepare("SELECT user_id, full_name, email, role, created_at FROM users WHERE user_id = ?");
         $stmt->execute([$userId]);
         $user = $stmt->fetch();
         
         // Set session
-        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['csrf_token'] = generateCSRFToken();
         
@@ -142,8 +142,8 @@ function loginUser($db) {
     }
     
     // Find user by email or student ID
-    $stmt = $db->prepare("SELECT * FROM users WHERE email = ? OR student_id = ? LIMIT 1");
-    $stmt->execute([$identifier, $identifier]);
+    $stmt = $db->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
+    $stmt->execute([$identifier]);
     $user = $stmt->fetch();
     
     // Log login attempt
@@ -153,12 +153,8 @@ function loginUser($db) {
         // Successful login
         $stmt->execute([$identifier, $ip, 1]);
         
-        // Update last login
-        $updateStmt = $db->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
-        $updateStmt->execute([$user['id']]);
-        
         // Set session
-        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['csrf_token'] = generateCSRFToken();
         
@@ -215,7 +211,7 @@ function getCurrentUser($db) {
         sendJSON(['success' => false, 'message' => 'Not authenticated'], 401);
     }
     
-    $stmt = $db->prepare("SELECT id, name, email, student_id, role, created_at, last_login FROM users WHERE id = ?");
+    $stmt = $db->prepare("SELECT user_id, full_name, email, role, created_at FROM users WHERE user_id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch();
     

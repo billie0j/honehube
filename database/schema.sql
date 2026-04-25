@@ -5,57 +5,50 @@
 CREATE DATABASE IF NOT EXISTS honehube CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE honehube;
 
--- Users table
+-- Users table (stores admin and student accounts)
 CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    student_id VARCHAR(20) NULL UNIQUE,
-    role ENUM('user', 'admin') DEFAULT 'user',
+    role ENUM('student', 'admin') DEFAULT 'student',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    last_login TIMESTAMP NULL,
-    is_active BOOLEAN DEFAULT TRUE,
     INDEX idx_email (email),
-    INDEX idx_student_id (student_id)
+    INDEX idx_role (role)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Listings table
-CREATE TABLE IF NOT EXISTS listings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    title VARCHAR(200) NOT NULL,
-    description TEXT,
+-- Accessories table (stores items posted by admin)
+CREATE TABLE IF NOT EXISTS accessories (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    item_name VARCHAR(200) NOT NULL,
     category VARCHAR(50) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    condition_type ENUM('new', 'used') NOT NULL,
+    description TEXT,
+    original_price DECIMAL(10, 2) NOT NULL,
     image VARCHAR(500) NULL,
-    status ENUM('active', 'sold', 'inactive') DEFAULT 'active',
+    status ENUM('available', 'sold') DEFAULT 'available',
+    posted_by INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user_id (user_id),
+    FOREIGN KEY (posted_by) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_posted_by (posted_by),
     INDEX idx_category (category),
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Inquiries table
-CREATE TABLE IF NOT EXISTS inquiries (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    listing_id INT NOT NULL,
-    buyer_id INT NOT NULL,
-    seller_id INT NOT NULL,
-    message TEXT NOT NULL,
-    status ENUM('pending', 'replied', 'closed') DEFAULT 'pending',
+-- Purchase requests table (stores student buying and negotiation requests)
+CREATE TABLE IF NOT EXISTS purchase_requests (
+    request_id INT AUTO_INCREMENT PRIMARY KEY,
+    item_id INT NOT NULL,
+    student_id INT NOT NULL,
+    original_price DECIMAL(10, 2) NOT NULL,
+    offered_price DECIMAL(10, 2) NULL,
+    message TEXT NULL,
+    status ENUM('pending', 'accepted', 'denied', 'negotiating', 'cancelled', 'completed') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE,
-    FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (seller_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_listing_id (listing_id),
-    INDEX idx_buyer_id (buyer_id),
-    INDEX idx_seller_id (seller_id)
+    FOREIGN KEY (item_id) REFERENCES accessories(item_id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_item_id (item_id),
+    INDEX idx_student_id (student_id),
+    INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Sessions table (for CSRF tokens and session management)
@@ -67,7 +60,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     user_agent VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     INDEX idx_user_id (user_id),
     INDEX idx_expires_at (expires_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -83,6 +76,21 @@ CREATE TABLE IF NOT EXISTS login_attempts (
     INDEX idx_ip_address (ip_address),
     INDEX idx_attempted_at (attempted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Insert default admin user
+-- Password: Admin@123 (hashed with bcrypt)
+INSERT INTO users (full_name, email, password, role) VALUES 
+('Admin User', 'admin@honehube.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin')
+ON DUPLICATE KEY UPDATE email=email;
+
+-- Insert sample accessories
+INSERT INTO accessories (item_name, category, description, original_price, status, posted_by) VALUES
+('Dell Latitude E7450', 'Laptops', 'Intel Core i5, 8GB RAM, 256GB SSD, 14" display', 450.00, 'available', 1),
+('Kingston 16GB DDR4 RAM', 'RAM', 'Brand new 16GB DDR4 2666MHz memory module', 75.00, 'available', 1),
+('Samsung 500GB SSD', 'Storage', 'High-speed SATA SSD, barely used', 60.00, 'available', 1),
+('HP Laptop Charger 65W', 'Chargers', 'Compatible with HP laptops, original charger', 25.00, 'available', 1),
+('Lenovo ThinkPad T480', 'Laptops', 'Intel Core i7, 16GB RAM, 512GB SSD, excellent condition', 650.00, 'available', 1)
+ON DUPLICATE KEY UPDATE item_id=item_id;
 
 -- Insert default admin user
 -- Password: Admin@123 (hashed with bcrypt)
