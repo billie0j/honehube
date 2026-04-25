@@ -27,7 +27,10 @@
       <button id="tab-gmail" onclick="switchTab('gmail')">Gmail</button>
     </div>
 
-    <form onsubmit="handleRegister(event)">
+    <form method="POST" onsubmit="handleRegister(event)">
+      <!-- CSRF Token Protection -->
+      <input type="hidden" name="csrf_token" id="csrf_token" value="">
+      
       <div class="form-group">
         <label for="name">Full Name</label>
         <input 
@@ -103,10 +106,13 @@
           placeholder="••••••••" 
           required 
           autocomplete="new-password"
-          minlength="6"
+          minlength="8"
           maxlength="100"
+          pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,}"
+          title="Must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character (@#$%^&+=!)"
           aria-label="Password"
         />
+        <p class="field-hint">Minimum 8 characters with uppercase, lowercase, number and special character</p>
       </div>
 
       <button type="submit" class="btn btn-primary" style="width:100%;margin-top:4px">Create Account</button>
@@ -120,6 +126,25 @@
 <script src="js/navbar.js"></script>
 <script>
   renderNavbar();
+
+  // Generate CSRF Token
+  function generateCSRFToken() {
+    const token = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    sessionStorage.setItem('csrf_token', token);
+    return token;
+  }
+
+  // Validate CSRF Token
+  function validateCSRFToken(token) {
+    const storedToken = sessionStorage.getItem('csrf_token');
+    return storedToken && storedToken === token;
+  }
+
+  // Initialize CSRF token on page load
+  const csrfToken = generateCSRFToken();
+  document.getElementById('csrf_token').value = csrfToken;
 
   let activeTab = 'email';
 
@@ -136,7 +161,18 @@
   function handleRegister(e) {
     e.preventDefault();
     const alertEl = document.getElementById('alert');
+    const csrfTokenInput = document.getElementById('csrf_token').value;
     alertEl.innerHTML = '';
+
+    // Validate CSRF Token
+    if (!validateCSRFToken(csrfTokenInput)) {
+      alertEl.innerHTML = '<div class="alert alert-error">Invalid security token. Please refresh the page.</div>';
+      return;
+    }
+
+    // Regenerate CSRF token after validation
+    const newToken = generateCSRFToken();
+    document.getElementById('csrf_token').value = newToken;
 
     const name     = document.getElementById('name').value.trim();
     const password = document.getElementById('password').value;
@@ -144,29 +180,35 @@
     let email = '';
     if (activeTab === 'email') {
       email = document.getElementById('email-input').value.trim();
-      if (!email) { alertEl.innerHTML = '<div class="alert alert-error">Please enter your college email.</div>'; return; }
+      if (!email) { alertEl.innerHTML = '<div class="alert alert-error">Please enter all required fields.</div>'; return; }
       if (!email.endsWith('@evlynehone.ac.zw')) {
-        alertEl.innerHTML = '<div class="alert alert-error">Email must end with @evlynehone.ac.zw</div>'; return;
+        alertEl.innerHTML = '<div class="alert alert-error">Invalid email format.</div>'; return;
       }
     } else if (activeTab === 'id') {
       const sid = document.getElementById('studentid-input').value.trim();
-      if (!sid) { alertEl.innerHTML = '<div class="alert alert-error">Please enter your student ID.</div>'; return; }
+      if (!sid) { alertEl.innerHTML = '<div class="alert alert-error">Please enter all required fields.</div>'; return; }
       email = `${sid.toLowerCase()}@evlynehone.ac.zw`;
     } else {
       email = document.getElementById('gmail-input').value.trim();
-      if (!email) { alertEl.innerHTML = '<div class="alert alert-error">Please enter your email address.</div>'; return; }
+      if (!email) { alertEl.innerHTML = '<div class="alert alert-error">Please enter all required fields.</div>'; return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        alertEl.innerHTML = '<div class="alert alert-error">Please enter a valid email address.</div>'; return;
+        alertEl.innerHTML = '<div class="alert alert-error">Invalid email format.</div>'; return;
       }
     }
 
-    if (password.length < 6) {
-      alertEl.innerHTML = '<div class="alert alert-error">Password must be at least 6 characters.</div>'; return;
+    if (password.length < 8) {
+      alertEl.innerHTML = '<div class="alert alert-error">Password does not meet security requirements.</div>'; return;
     }
 
-    // Check if user already exists
+    // Validate password strength
+    const passwordPattern = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,}/;
+    if (!passwordPattern.test(password)) {
+      alertEl.innerHTML = '<div class="alert alert-error">Password does not meet security requirements.</div>'; return;
+    }
+
+    // Check if user already exists - use generic message
     if (Store.findUserByEmail(email)) {
-      alertEl.innerHTML = '<div class="alert alert-error">An account with this email already exists.</div>'; return;
+      alertEl.innerHTML = '<div class="alert alert-error">Unable to create account. Please try a different email.</div>'; return;
     }
 
     // Create new user

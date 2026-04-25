@@ -35,7 +35,7 @@
 
     <div id="alert"></div>
 
-    <form onsubmit="handleLogin(event)">
+    <form method="POST" onsubmit="handleLogin(event)">
       <!-- CSRF Token Protection -->
       <input type="hidden" name="csrf_token" id="csrf_token" value="">
       
@@ -131,6 +131,25 @@
 <script>
   renderNavbar();
 
+  // Generate CSRF Token
+  function generateCSRFToken() {
+    const token = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    sessionStorage.setItem('csrf_token', token);
+    return token;
+  }
+
+  // Validate CSRF Token
+  function validateCSRFToken(token) {
+    const storedToken = sessionStorage.getItem('csrf_token');
+    return storedToken && storedToken === token;
+  }
+
+  // Initialize CSRF token on page load
+  const csrfToken = generateCSRFToken();
+  document.getElementById('csrf_token').value = csrfToken;
+
   // Pre-fill if remembered
   const remembered = localStorage.getItem('hh_remember');
   if (remembered) {
@@ -143,7 +162,18 @@
     const alertEl  = document.getElementById('alert');
     const remember = document.getElementById('remember').checked;
     const rawInput = document.getElementById('email').value.trim();
+    const csrfTokenInput = document.getElementById('csrf_token').value;
     alertEl.innerHTML = '';
+
+    // Validate CSRF Token
+    if (!validateCSRFToken(csrfTokenInput)) {
+      alertEl.innerHTML = '<div class="alert alert-error">Invalid security token. Please refresh the page.</div>';
+      return;
+    }
+
+    // Regenerate CSRF token after validation
+    const newToken = generateCSRFToken();
+    document.getElementById('csrf_token').value = newToken;
 
     // if input looks like a student ID (no @), convert to email
     const emailInput = rawInput.includes('@') ? rawInput : `${rawInput.toLowerCase()}@evlynehone.ac.zw`;
@@ -167,7 +197,8 @@
         location.href = 'index.html';
       }, 1000);
     } else {
-      alertEl.innerHTML = '<div class="alert alert-error">Invalid email/ID or password. Please register if you don\'t have an account.</div>';
+      // Generic error message - don't reveal if email exists or password is wrong
+      alertEl.innerHTML = '<div class="alert alert-error">Invalid email or password.</div>';
     }
   }
 
