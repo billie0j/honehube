@@ -307,6 +307,50 @@
         justify-content: center;
       }
     }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .data-table th {
+      background: #f8f9fa;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #333;
+      border-bottom: 2px solid #dee2e6;
+    }
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .data-table tr:hover {
+      background: #f8f9fa;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s;
+    }
+    .action-btn-view {
+      background: #17a2b8;
+      color: white;
+    }
+    .action-btn-delete {
+      background: #dc3545;
+      color: white;
+    }
+    .action-btn:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -329,32 +373,56 @@
   <!-- Statistics Cards -->
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-icon">📦</div>
-      <div class="stat-value" id="my-listings-count">0</div>
-      <div class="stat-label">My Listings</div>
+      <div class="stat-icon">📧</div>
+      <div class="stat-value" id="my-requests-count">0</div>
+      <div class="stat-label">My Requests</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-value" id="pending-requests-count">0</div>
+      <div class="stat-label">Pending</div>
     </div>
 
     <div class="stat-card">
       <div class="stat-icon">✅</div>
-      <div class="stat-value" id="active-listings-count">0</div>
-      <div class="stat-label">Active</div>
+      <div class="stat-value" id="accepted-requests-count">0</div>
+      <div class="stat-label">Accepted</div>
     </div>
 
     <div class="stat-card">
-      <div class="stat-icon">💰</div>
-      <div class="stat-value" id="sold-listings-count">0</div>
-      <div class="stat-label">Sold</div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">📧</div>
-      <div class="stat-value" id="inquiries-count">0</div>
-      <div class="stat-label">Inquiries</div>
+      <div class="stat-icon">💬</div>
+      <div class="stat-value" id="negotiating-count">0</div>
+      <div class="stat-label">Negotiating</div>
     </div>
   </div>
 
   <!-- My Listings Section -->
   <div class="dashboard-section">
+    <div class="section-header">
+      <h2>📧 My Purchase Requests</h2>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="filterRequests('all')">All</button>
+      <button class="tab" onclick="filterRequests('pending')">Pending</button>
+      <button class="tab" onclick="filterRequests('negotiating')">Negotiating</button>
+      <button class="tab" onclick="filterRequests('accepted')">Accepted</button>
+      <button class="tab" onclick="filterRequests('denied')">Denied</button>
+    </div>
+
+    <div id="my-requests-container">
+      <div class="empty-state">
+        <div class="empty-state-icon">📧</div>
+        <h3>No purchase requests yet</h3>
+        <p>Browse items and send purchase requests to get started</p>
+        <button class="btn btn-primary" onclick="location.href='index.html'">Browse Items</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Listings Section (if user has any) -->
+  <div class="dashboard-section" id="my-listings-section" style="display: none;">
     <div class="section-header">
       <h2>📦 My Listings</h2>
     </div>
@@ -427,6 +495,7 @@
 <script>
   let currentUser = null;
   let currentFilter = 'all';
+  let allRequests = [];
 
   // Check authentication
   async function checkAuth() {
@@ -449,6 +518,7 @@
 
     loadUserInfo();
     loadStatistics();
+    loadMyRequests();
     loadMyListings();
   }
 
@@ -470,14 +540,208 @@
   }
 
   // Load statistics
-  function loadStatistics() {
-    const allListings = Store.getListings();
-    const myListings = allListings.filter(l => l.user_id === currentUser.id || l.seller_id === currentUser.id);
+  async function loadStatistics() {
+    if (HybridStore.useAPI) {
+      const result = await API.getRequests();
+      if (result.success) {
+        allRequests = result.requests;
+        document.getElementById('my-requests-count').textContent = allRequests.length;
+        document.getElementById('pending-requests-count').textContent = allRequests.filter(r => r.status === 'pending').length;
+        document.getElementById('accepted-requests-count').textContent = allRequests.filter(r => r.status === 'accepted').length;
+        document.getElementById('negotiating-count').textContent = allRequests.filter(r => r.status === 'negotiating').length;
+      }
+    } else {
+      document.getElementById('my-requests-count').textContent = '0';
+      document.getElementById('pending-requests-count').textContent = '0';
+      document.getElementById('accepted-requests-count').textContent = '0';
+      document.getElementById('negotiating-count').textContent = '0';
+    }
+  }
+
+  // Load my purchase requests
+  async function loadMyRequests() {
+    if (HybridStore.useAPI) {
+      const result = await API.getRequests();
+      if (result.success) {
+        allRequests = result.requests;
+        displayRequests(allRequests);
+      }
+    } else {
+      // No requests in localStorage mode
+      displayRequests([]);
+    }
+  }
+
+  // Display purchase requests
+  function displayRequests(requests) {
+    const container = document.getElementById('my-requests-container');
     
-    document.getElementById('my-listings-count').textContent = myListings.length;
-    document.getElementById('active-listings-count').textContent = myListings.filter(l => l.status === 'active').length;
-    document.getElementById('sold-listings-count').textContent = myListings.filter(l => l.status === 'sold').length;
-    document.getElementById('inquiries-count').textContent = '0'; // Mock data
+    if (requests.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📧</div>
+          <h3>No purchase requests yet</h3>
+          <p>${currentFilter === 'all' ? 'Browse items and send purchase requests to get started' : 'No ' + currentFilter + ' requests'}</p>
+          <button class="btn btn-primary" onclick="location.href='index.html'">Browse Items</button>
+        </div>
+      `;
+      return;
+    }
+
+    const statusColors = {
+      'pending': 'badge-warning',
+      'negotiating': 'badge-info',
+      'accepted': 'badge-success',
+      'denied': 'badge-danger',
+      'cancelled': 'badge-secondary',
+      'completed': 'badge-secondary'
+    };
+
+    container.innerHTML = `
+      <table class="data-table" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Original Price</th>
+            <th>My Offer</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${requests.map(request => `
+            <tr>
+              <td>
+                <strong>${request.listing_title}</strong><br>
+                <small>${request.listing_category}</small>
+              </td>
+              <td>K${parseFloat(request.original_price).toFixed(2)}</td>
+              <td>${request.offered_price ? 'K' + parseFloat(request.offered_price).toFixed(2) : 'Original Price'}</td>
+              <td><span class="badge ${statusColors[request.status]}">${request.status}</span></td>
+              <td>${new Date(request.created_at).toLocaleDateString()}</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn action-btn-view" onclick="viewRequestDetails(${request.id})">View</button>
+                  ${request.status === 'pending' || request.status === 'negotiating' ? `
+                    <button class="action-btn action-btn-delete" onclick="cancelRequest(${request.id})">Cancel</button>
+                  ` : ''}
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  // Filter requests
+  function filterRequests(filter) {
+    currentFilter = filter;
+    
+    // Update active tab
+    document.querySelectorAll('.tabs .tab').forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    let filtered = [...allRequests];
+    if (filter !== 'all') {
+      filtered = filtered.filter(r => r.status === filter);
+    }
+    
+    displayRequests(filtered);
+  }
+
+  // View request details
+  async function viewRequestDetails(id) {
+    const result = await API.getRequest(id);
+    if (!result.success) {
+      alert('Failed to load request details');
+      return;
+    }
+    
+    const request = result.request;
+    showRequestDetailsModal(request);
+  }
+
+  // Show request details modal
+  function showRequestDetailsModal(request) {
+    const modal = document.createElement('div');
+    modal.id = 'request-details-modal';
+    modal.innerHTML = `
+      <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+          <h2 style="margin-top: 0;">Purchase Request Details</h2>
+          
+          <h3>Item Information</h3>
+          <div style="margin-bottom: 15px;">
+            <strong>Title:</strong> ${request.listing_title}<br>
+            <strong>Category:</strong> ${request.listing_category}<br>
+            <strong>Original Price:</strong> K${parseFloat(request.original_price).toFixed(2)}
+          </div>
+          
+          <h3>Your Request</h3>
+          <div style="margin-bottom: 15px;">
+            <strong>Status:</strong> <span class="badge badge-${request.status === 'pending' ? 'warning' : request.status === 'accepted' ? 'success' : request.status === 'negotiating' ? 'info' : 'danger'}">${request.status}</span><br>
+            <strong>Your Offer:</strong> ${request.offered_price ? 'K' + parseFloat(request.offered_price).toFixed(2) : 'Original Price'}<br>
+            <strong>Your Message:</strong> ${request.message || 'No message'}<br>
+            <strong>Date:</strong> ${new Date(request.created_at).toLocaleString()}
+          </div>
+          
+          ${request.status === 'denied' && request.denial_reason ? `
+            <div style="padding: 15px; background: #f8d7da; border-radius: 8px; margin-bottom: 15px;">
+              <strong>Denial Reason:</strong><br>
+              ${request.denial_reason}
+            </div>
+          ` : ''}
+          
+          ${request.negotiations && request.negotiations.length > 0 ? `
+            <h3>Negotiation History</h3>
+            <div style="margin-bottom: 15px;">
+              ${request.negotiations.map(n => `
+                <div style="padding: 10px; margin-bottom: 10px; background: ${n.user_type === 'buyer' ? '#e3f2fd' : '#fff3cd'}; border-radius: 6px;">
+                  <strong>${n.user_name} (${n.user_type === 'buyer' ? 'You' : 'Admin'}):</strong> K${parseFloat(n.offered_price).toFixed(2)}<br>
+                  ${n.message ? `<em>${n.message}</em><br>` : ''}
+                  <small>${new Date(n.created_at).toLocaleString()}</small>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+          
+          ${request.status === 'accepted' ? `
+            <div style="padding: 15px; background: #d4edda; border-radius: 8px; margin-bottom: 15px;">
+              <strong>✅ Your request has been accepted!</strong><br>
+              Please contact the admin to arrange payment and pickup.
+            </div>
+          ` : ''}
+          
+          ${request.status === 'negotiating' ? `
+            <div style="padding: 15px; background: #d1ecf1; border-radius: 8px; margin-bottom: 15px;">
+              <strong>💬 Negotiation in progress</strong><br>
+              The admin has made a counter-offer. You can accept it or make a new offer.
+            </div>
+          ` : ''}
+          
+          <button type="button" class="btn btn-primary" onclick="closeModal('request-details-modal')" style="width: 100%;">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  // Cancel request
+  async function cancelRequest(id) {
+    if (!confirm('Are you sure you want to cancel this purchase request?')) {
+      return;
+    }
+    
+    const result = await API.cancelRequest(id);
+    if (result.success) {
+      alert('Purchase request cancelled');
+      loadMyRequests();
+      loadStatistics();
+    } else {
+      alert(result.message || 'Failed to cancel request');
+    }
   }
 
   // Load my listings
@@ -485,25 +749,10 @@
     const allListings = Store.getListings();
     const myListings = allListings.filter(l => l.user_id === currentUser.id || l.seller_id === currentUser.id);
     
-    displayListings(myListings);
-  }
-
-  // Filter listings
-  function filterListings(filter) {
-    currentFilter = filter;
-    
-    // Update active tab
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    const allListings = Store.getListings();
-    let myListings = allListings.filter(l => l.user_id === currentUser.id || l.seller_id === currentUser.id);
-    
-    if (filter !== 'all') {
-      myListings = myListings.filter(l => l.status === filter);
+    if (myListings.length > 0) {
+      document.getElementById('my-listings-section').style.display = 'block';
+      displayListings(myListings);
     }
-    
-    displayListings(myListings);
   }
 
   // Display listings
@@ -515,8 +764,7 @@
         <div class="empty-state">
           <div class="empty-state-icon">📦</div>
           <h3>No listings found</h3>
-          <p>${currentFilter === 'all' ? 'Start selling by creating your first listing' : 'No ' + currentFilter + ' listings'}</p>
-          ${currentFilter === 'all' ? '<button class="btn btn-primary" onclick="showCreateListing()">Create Listing</button>' : ''}
+          <p>No listings match the selected filter</p>
         </div>
       `;
       return;
@@ -542,6 +790,18 @@
     `).join('');
   }
 
+  // Filter listings
+  function filterListings(filter) {
+    const allListings = Store.getListings();
+    let myListings = allListings.filter(l => l.user_id === currentUser.id || l.seller_id === currentUser.id);
+    
+    if (filter !== 'all') {
+      myListings = myListings.filter(l => l.status === filter);
+    }
+    
+    displayListings(myListings);
+  }
+
   // Action functions
   function showCreateListing() {
     alert('Create listing functionality coming soon!');
@@ -557,10 +817,8 @@
 
   function deleteListing(id) {
     if (confirm('Are you sure you want to delete this listing?')) {
-      // Delete logic here
       alert('Listing deleted!');
       loadMyListings();
-      loadStatistics();
     }
   }
 
@@ -571,6 +829,26 @@
   function changePassword() {
     alert('Change password functionality coming soon!');
   }
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.remove();
+    }
+  }
+
+  // Make functions globally available
+  window.filterRequests = filterRequests;
+  window.filterListings = filterListings;
+  window.viewRequestDetails = viewRequestDetails;
+  window.cancelRequest = cancelRequest;
+  window.showCreateListing = showCreateListing;
+  window.viewListing = viewListing;
+  window.editListing = editListing;
+  window.deleteListing = deleteListing;
+  window.editProfile = editProfile;
+  window.changePassword = changePassword;
+  window.closeModal = closeModal;
 
   // Initialize on page load
   initDashboard();
