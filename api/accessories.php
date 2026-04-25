@@ -145,6 +145,9 @@ function createAccessory($db) {
         $stmt->execute([$itemId]);
         $accessory = $stmt->fetch();
         
+        // Log audit trail
+        logAudit('item_added', "Admin added item: {$item_name} (K{$original_price})", 'accessories', $itemId);
+        
         sendJSON([
             'success' => true,
             'message' => 'Item created successfully',
@@ -228,6 +231,9 @@ function updateAccessory($db) {
         $stmt->execute([$id]);
         $accessory = $stmt->fetch();
         
+        // Log audit trail
+        logAudit('item_updated', "Admin updated item: {$item_name} (Status: {$status})", 'accessories', $id);
+        
         sendJSON([
             'success' => true,
             'message' => 'Item updated successfully',
@@ -282,6 +288,9 @@ function deleteAccessory($db) {
         // Delete accessory
         $stmt = $db->prepare("DELETE FROM accessories WHERE item_id = ?");
         $stmt->execute([$id]);
+        
+        // Log audit trail
+        logAudit('item_deleted', "Admin deleted item ID: {$id}", 'accessories', $id);
         
         sendJSON([
             'success' => true,

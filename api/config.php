@@ -148,4 +148,75 @@ function startSecureSession() {
         session_start();
     }
 }
+
+/**
+ * Log audit trail for important actions
+ * 
+ * @param string $actionType - Type of action (e.g., 'user_login', 'item_added', 'request_created')
+ * @param string $actionDescription - Detailed description of the action
+ * @param string|null $tableName - Name of the table affected (optional)
+ * @param int|null $recordId - ID of the record affected (optional)
+ */
+function logAudit($actionType, $actionDescription, $tableName = null, $recordId = null) {
+    try {
+        $db = Database::getInstance()->getConnection();
+        $userId = $_SESSION['user_id'] ?? null;
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+        
+        $stmt = $db->prepare("
+            INSERT INTO audit_logs (user_id, action_type, action_description, table_name, record_id, ip_address, user_agent) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([$userId, $actionType, $actionDescription, $tableName, $recordId, $ipAddress, $userAgent]);
+    } catch(PDOException $e) {
+        // Log error but don't fail the main operation
+        error_log("Audit Log Error: " . $e->getMessage());
+    }
+}
+
+/**
+ * Validate price input
+ * 
+ * @param mixed $price - Price value to validate
+ * @return bool - True if valid, false otherwise
+ */
+function validatePrice($price) {
+    return is_numeric($price) && $price > 0 && $price <= 999999.99;
+}
+
+/**
+ * Validate phone number (Zambian format)
+ * 
+ * @param string $phone - Phone number to validate
+ * @return bool - True if valid, false otherwise
+ */
+function validatePhone($phone) {
+    // Zambian phone format: +260 or 0 followed by 9 digits
+    return preg_match('/^(\+260|0)[0-9]{9}$/', $phone);
+}
+
+/**
+ * Encrypt sensitive data
+ * 
+ * @param string $data - Data to encrypt
+ * @return string - Encrypted data
+ */
+function encryptData($data) {
+    $key = hash('sha256', 'honehube_encryption_key_2026'); // Use environment variable in production
+    $iv = substr(hash('sha256', 'honehube_iv_2026'), 0, 16);
+    return base64_encode(openssl_encrypt($data, 'AES-256-CBC', $key, 0, $iv));
+}
+
+/**
+ * Decrypt sensitive data
+ * 
+ * @param string $data - Encrypted data
+ * @return string - Decrypted data
+ */
+function decryptData($data) {
+    $key = hash('sha256', 'honehube_encryption_key_2026'); // Use environment variable in production
+    $iv = substr(hash('sha256', 'honehube_iv_2026'), 0, 16);
+    return openssl_decrypt(base64_decode($data), 'AES-256-CBC', $key, 0, $iv);
+}
 ?>

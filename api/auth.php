@@ -86,6 +86,9 @@ function registerUser($db) {
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['csrf_token'] = generateCSRFToken();
         
+        // Log audit trail
+        logAudit('user_registered', "New user registered: {$user['email']}", 'users', $user['user_id']);
+        
         sendJSON([
             'success' => true,
             'message' => 'Account created successfully',
@@ -167,6 +170,9 @@ function loginUser($db) {
         // Remove password from response
         unset($user['password']);
         
+        // Log audit trail
+        logAudit('user_login', "User logged in: {$user['email']}", 'users', $user['user_id']);
+        
         sendJSON([
             'success' => true,
             'message' => 'Login successful',
@@ -185,6 +191,11 @@ function loginUser($db) {
  * Logout user
  */
 function logoutUser() {
+    // Log audit trail before clearing session
+    if (isset($_SESSION['user_id'])) {
+        logAudit('user_logout', "User logged out", 'users', $_SESSION['user_id']);
+    }
+    
     // Clear session
     $_SESSION = [];
     
