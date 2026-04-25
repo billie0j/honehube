@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login — Honehube</title>
   <link rel="stylesheet" href="css/style.css" />
+  <!-- Google reCAPTCHA -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -86,6 +88,10 @@
         </label>
       </div>
 
+      <!-- Google reCAPTCHA -->
+      <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" style="margin: 15px 0;"></div>
+      <p class="field-hint" style="font-size: 12px; color: #666; margin-top: -10px;">Note: Using test reCAPTCHA key. Replace with your own site key in production.</p>
+
       <button type="submit" class="btn btn-primary" style="width:100%">Login</button>
     </form>
 
@@ -99,7 +105,7 @@
   <h1>Honehube Laptop Marketplace</h1>
   <p>Buy and sell laptops and laptop parts within Evlyne Hone College campus</p>
   <div class="search-bar">
-    <input type="text" id="search-input" placeholder="Search laptops, RAM, SSD, chargers..." />
+    <input type="text" id="search-input" placeholder="Search laptops, RAM, SSD, chargers..." maxlength="100" />
     <button class="btn btn-primary" onclick="loadListings()">Search</button>
   </div>
 </div>
@@ -164,6 +170,13 @@
     const rawInput = document.getElementById('email').value.trim();
     const csrfTokenInput = document.getElementById('csrf_token').value;
     alertEl.innerHTML = '';
+
+    // Validate reCAPTCHA
+    const recaptchaResponse = grecaptcha.getResponse();
+    if (!recaptchaResponse) {
+      alertEl.innerHTML = '<div class="alert alert-error">Please complete the reCAPTCHA verification.</div>';
+      return;
+    }
 
     // Validate CSRF Token
     if (!validateCSRFToken(csrfTokenInput)) {
