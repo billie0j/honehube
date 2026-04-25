@@ -129,9 +129,20 @@
 </div>
 
 <script src="js/store.js"></script>
+<script src="js/api.js"></script>
 <script src="js/navbar.js"></script>
 <script>
   renderNavbar();
+
+  // Initialize API
+  let apiReady = false;
+  HybridStore.init().then(ready => {
+    apiReady = ready;
+    if (apiReady) {
+      // Update CSRF token from API
+      document.getElementById('csrf_token').value = HybridStore.getCSRFToken();
+    }
+  });
 
   // Generate CSRF Token
   function generateCSRFToken() {
@@ -310,31 +321,35 @@
       alertEl.innerHTML = '<div class="alert alert-error">Password does not meet security requirements.</div>'; return;
     }
 
-    // Check if user already exists - use generic message
-    if (Store.findUserByEmail(email)) {
-      alertEl.innerHTML = '<div class="alert alert-error">Unable to create account. Please try a different email.</div>'; return;
-    }
+    // Show loading state
+    alertEl.innerHTML = '<div class="alert alert-info">Creating account...</div>';
 
-    // Create new user
-    const newUser = {
-      id: Date.now(),
+    // Prepare user data
+    const userData = {
       name: name,
       email: email,
       password: password,
-      studentId: activeTab === 'id' ? document.getElementById('studentid-input').value.trim().toUpperCase() : null,
-      role: 'user',
-      createdAt: new Date().toISOString()
+      student_id: activeTab === 'id' ? document.getElementById('studentid-input').value.trim().toUpperCase() : null
     };
 
-    // Save user
-    Store.addUser(newUser);
-    Store.setCurrentUser(newUser, true);
-
-    alertEl.innerHTML = '<div class="alert alert-success">Account created successfully! Redirecting...</div>';
-    
-    setTimeout(() => {
-      location.href = 'index.html';
-    }, 1000);
+    // Use HybridStore (API or localStorage)
+    HybridStore.register(userData).then(result => {
+      if (result.success) {
+        alertEl.innerHTML = '<div class="alert alert-success">Account created successfully! Redirecting...</div>';
+        
+        setTimeout(() => {
+          location.href = 'index.html';
+        }, 1000);
+      } else {
+        alertEl.innerHTML = '<div class="alert alert-error">' + (result.message || 'Unable to create account. Please try a different email.') + '</div>';
+        // Reset reCAPTCHA
+        grecaptcha.reset();
+      }
+    }).catch(error => {
+      console.error('Registration error:', error);
+      alertEl.innerHTML = '<div class="alert alert-error">An error occurred. Please try again.</div>';
+      grecaptcha.reset();
+    });
   }
 </script>
 </body>

@@ -133,9 +133,20 @@
 </div>
 
 <script src="js/store.js"></script>
+<script src="js/api.js"></script>
 <script src="js/navbar.js"></script>
 <script>
   renderNavbar();
+
+  // Initialize API
+  let apiReady = false;
+  HybridStore.init().then(ready => {
+    apiReady = ready;
+    if (apiReady) {
+      // Update CSRF token from API
+      document.getElementById('csrf_token').value = HybridStore.getCSRFToken();
+    }
+  });
 
   // Generate CSRF Token
   function generateCSRFToken() {
@@ -240,28 +251,38 @@
     // if input looks like a student ID (no @), convert to email
     const emailInput = rawInput.includes('@') ? rawInput : `${rawInput.toLowerCase()}@evlynehone.ac.zw`;
 
-    // Use Store to authenticate
-    const user = Store.authenticate(emailInput, document.getElementById('password').value);
+    // Show loading state
+    alertEl.innerHTML = '<div class="alert alert-info">Logging in...</div>';
 
-    if (user) {
-      if (remember) {
-        localStorage.setItem('hh_remember', rawInput);
+    // Use HybridStore (API or localStorage)
+    HybridStore.login({
+      email: emailInput,
+      password: document.getElementById('password').value,
+      remember: remember
+    }).then(result => {
+      if (result.success) {
+        if (remember) {
+          localStorage.setItem('hh_remember', rawInput);
+        } else {
+          localStorage.removeItem('hh_remember');
+        }
+        
+        alertEl.innerHTML = '<div class="alert alert-success">Login successful! Redirecting...</div>';
+        
+        setTimeout(() => {
+          location.href = 'index.html';
+        }, 1000);
       } else {
-        localStorage.removeItem('hh_remember');
+        // Generic error message
+        alertEl.innerHTML = '<div class="alert alert-error">' + (result.message || 'Invalid email or password.') + '</div>';
+        // Reset reCAPTCHA
+        grecaptcha.reset();
       }
-
-      // Save current user
-      Store.setCurrentUser(user, remember);
-      
-      alertEl.innerHTML = '<div class="alert alert-success">Login successful! Redirecting...</div>';
-      
-      setTimeout(() => {
-        location.href = 'index.html';
-      }, 1000);
-    } else {
-      // Generic error message - don't reveal if email exists or password is wrong
-      alertEl.innerHTML = '<div class="alert alert-error">Invalid email or password.</div>';
-    }
+    }).catch(error => {
+      console.error('Login error:', error);
+      alertEl.innerHTML = '<div class="alert alert-error">An error occurred. Please try again.</div>';
+      grecaptcha.reset();
+    });
   }
 
   function togglePassword() {
