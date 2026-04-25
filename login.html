@@ -3,15 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login — Honehub</title>
+  <title>Login — Honehube</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
 <nav class="navbar" id="navbar"></nav>
 
-<div class="auth-page">
-  <div class="auth-card card">
+<!-- Full Screen Background with Login Form Overlay -->
+<div class="login-page-wrapper" style="position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+  <!-- Full Screen Background Image -->
+  <div class="login-background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+    <img src="images/building.png" alt="Campus Building" style="width: 100%; height: 100%; object-fit: cover;" />
+    <!-- Dark overlay for better text readability -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);"></div>
+  </div>
+
+  <!-- Login Form Centered -->
+  <div class="auth-page" style="position: relative; z-index: 2; width: 100%; max-width: 450px; padding: 20px;">
+    <div class="auth-card card" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
     <div class="auth-header">
       <div class="auth-icon">💻</div>
       <h2>Welcome back</h2>
@@ -26,14 +36,39 @@
     <div id="alert"></div>
 
     <form onsubmit="handleLogin(event)">
+      <!-- CSRF Token Protection -->
+      <input type="hidden" name="csrf_token" id="csrf_token" value="">
+      
       <div class="form-group">
-        <label>Email or Student ID</label>
-        <input type="text" id="email" placeholder="b123456@evlynehone.ac.zw or B123456" required autocomplete="username" />
+        <label for="email">Email or Student ID</label>
+        <input 
+          type="text" 
+          id="email" 
+          name="email"
+          placeholder="b123456@evlynehone.ac.zw or B123456" 
+          required 
+          autocomplete="username"
+          minlength="3"
+          maxlength="100"
+          aria-label="Email or Student ID"
+        />
       </div>
       <div class="form-group">
-        <label>Password</label>
+        <label for="password">Password</label>
         <div class="input-eye">
-          <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" />
+          <input 
+            type="password" 
+            id="password" 
+            name="password"
+            placeholder="••••••••" 
+            required 
+            autocomplete="current-password"
+            minlength="8"
+            maxlength="100"
+            pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,}"
+            title="Must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character (@#$%^&+=!)"
+            aria-label="Password"
+          />
           <button type="button" class="eye-btn" onclick="togglePassword()" aria-label="Toggle password">
             <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -55,10 +90,44 @@
     </form>
 
     <p class="auth-footer">Don't have an account? <a href="register.html">Register</a></p>
+    </div>
+  </div>
+</div>
+<!-- End Login Page Wrapper -->
+
+<div class="hero" style="display: none;">
+  <h1>Honehube Laptop Marketplace</h1>
+  <p>Buy and sell laptops and laptop parts within Evlyne Hone College campus</p>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Search laptops, RAM, SSD, chargers..." />
+    <button class="btn btn-primary" onclick="loadListings()">Search</button>
   </div>
 </div>
 
+<div class="filters" style="display: none;">
+  <div class="category-tabs">
+    <button class="tab active" onclick="setCategory(this,'')">All</button>
+    <button class="tab" onclick="setCategory(this,'Laptops')">Laptops</button>
+    <button class="tab" onclick="setCategory(this,'RAM')">RAM</button>
+    <button class="tab" onclick="setCategory(this,'Storage')">Storage</button>
+    <button class="tab" onclick="setCategory(this,'Screens')">Screens</button>
+    <button class="tab" onclick="setCategory(this,'Keyboards')">Keyboards</button>
+    <button class="tab" onclick="setCategory(this,'Chargers')">Chargers</button>
+    <button class="tab" onclick="setCategory(this,'Accessories')">Accessories</button>
+  </div>
+  <select id="condition-filter" onchange="loadListings()" style="width:auto">
+    <option value="">All Conditions</option>
+    <option value="new">New</option>
+    <option value="used">Used</option>
+  </select>
+</div>
+
+<div class="listings-section" style="display: none;">
+  <div id="listings-container" class="listings-grid"></div>
+</div>
+
 <script src="js/store.js"></script>
+<script src="js/navbar.js"></script>
 <script>
   renderNavbar();
 
@@ -79,19 +148,26 @@
     // if input looks like a student ID (no @), convert to email
     const emailInput = rawInput.includes('@') ? rawInput : `${rawInput.toLowerCase()}@evlynehone.ac.zw`;
 
-    try {
-      const user = loginUser(emailInput, document.getElementById('password').value);
+    // Use Store to authenticate
+    const user = Store.authenticate(emailInput, document.getElementById('password').value);
 
+    if (user) {
       if (remember) {
         localStorage.setItem('hh_remember', rawInput);
       } else {
         localStorage.removeItem('hh_remember');
       }
 
-      saveAuth(user);
-      location.href = user.role === 'admin' ? 'admin/dashboard.html' : 'buyer/dashboard.html';
-    } catch (err) {
-      alertEl.innerHTML = `<div class="alert alert-error">${err.error || 'Login failed'}</div>`;
+      // Save current user
+      Store.setCurrentUser(user, remember);
+      
+      alertEl.innerHTML = '<div class="alert alert-success">Login successful! Redirecting...</div>';
+      
+      setTimeout(() => {
+        location.href = 'index.html';
+      }, 1000);
+    } else {
+      alertEl.innerHTML = '<div class="alert alert-error">Invalid email/ID or password. Please register if you don\'t have an account.</div>';
     }
   }
 
@@ -107,6 +183,56 @@
       : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
          <circle cx="12" cy="12" r="3"/>`;
   }
+
+  let activeCategory = '';
+
+  function setCategory(el, cat) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    activeCategory = cat;
+    loadListings();
+  }
+
+  function loadListings() {
+    const search    = document.getElementById('search-input').value.toLowerCase();
+    const condition = document.getElementById('condition-filter').value;
+    const container = document.getElementById('listings-container');
+
+    let listings = Store.getListings().filter(l => l.status === 'active');
+    if (activeCategory) listings = listings.filter(l => l.category === activeCategory);
+    if (condition)      listings = listings.filter(l => l.condition_type === condition);
+    if (search)         listings = listings.filter(l => l.title.toLowerCase().includes(search) || (l.description||'').toLowerCase().includes(search));
+
+    if (!listings.length) {
+      container.innerHTML = '<p class="empty-msg">No listings found.</p>';
+      return;
+    }
+
+    container.innerHTML = listings.map(l => `
+      <a href="listing.html?id=${l.id}" class="listing-card card">
+        <div class="listing-img">
+          ${l.image ? `<img src="${l.image}" alt="${l.title}" />` : `<div class="listing-img-placeholder">📱</div>`}
+        </div>
+        <div class="listing-info">
+          <span class="badge badge-${l.condition_type}">${l.condition_type}</span>
+          <h3>${l.title}</h3>
+          <p class="listing-category">${l.category}</p>
+          <p class="listing-price">K${parseFloat(l.price).toFixed(2)}</p>
+          <p class="listing-seller">by ${l.seller_name}</p>
+        </div>
+      </a>`).join('');
+  }
+
+  // pick up category from home page link e.g. index.html?cat=Laptops
+  const urlCat = new URLSearchParams(location.search).get('cat');
+  if (urlCat) {
+    activeCategory = urlCat;
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.getAttribute('onclick').includes(`'${urlCat}'`));
+    });
+  }
+
+  loadListings();
 </script>
 </body>
 </html>

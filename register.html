@@ -29,22 +29,51 @@
 
     <form onsubmit="handleRegister(event)">
       <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="name" placeholder="Your full name" required />
+        <label for="name">Full Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name"
+          placeholder="Your full name" 
+          required 
+          minlength="2"
+          maxlength="100"
+          autocomplete="name"
+          aria-label="Full Name"
+        />
       </div>
 
       <!-- College Email input -->
       <div class="form-group" id="group-email">
-        <label>College Email</label>
-        <input type="email" id="email-input" placeholder="b123456@evlynehone.ac.zw" autocomplete="email" />
+        <label for="email-input">College Email</label>
+        <input 
+          type="email" 
+          id="email-input" 
+          name="email"
+          placeholder="b123456@evlynehone.ac.zw" 
+          autocomplete="email"
+          pattern="[a-zA-Z0-9._%+-]+@evlynehone\.ac\.zw"
+          maxlength="100"
+          aria-label="College Email"
+        />
         <p class="field-hint">Use your official Evlyne Hone College email</p>
       </div>
 
       <!-- Student ID input -->
       <div class="form-group" id="group-id" style="display:none">
-        <label>Student ID</label>
+        <label for="studentid-input">Student ID</label>
         <div class="input-suffix">
-          <input type="text" id="studentid-input" placeholder="B123456" autocomplete="off" />
+          <input 
+            type="text" 
+            id="studentid-input" 
+            name="studentid"
+            placeholder="B123456" 
+            autocomplete="off"
+            pattern="[a-zA-Z][0-9]{5,6}"
+            minlength="6"
+            maxlength="7"
+            aria-label="Student ID"
+          />
           <span class="suffix-label">@evlynehone.ac.zw</span>
         </div>
         <p class="field-hint">Enter your student ID — your email will be ID@evlynehone.ac.zw</p>
@@ -52,14 +81,32 @@
 
       <!-- Gmail / any email input -->
       <div class="form-group" id="group-gmail" style="display:none">
-        <label>Email Address</label>
-        <input type="email" id="gmail-input" placeholder="enock@gmail.com" autocomplete="email" />
+        <label for="gmail-input">Email Address</label>
+        <input 
+          type="email" 
+          id="gmail-input" 
+          name="gmail"
+          placeholder="enock@gmail.com" 
+          autocomplete="email"
+          maxlength="100"
+          aria-label="Email Address"
+        />
         <p class="field-hint">Any valid email address is accepted</p>
       </div>
 
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="••••••••" required autocomplete="new-password" />
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password"
+          placeholder="••••••••" 
+          required 
+          autocomplete="new-password"
+          minlength="6"
+          maxlength="100"
+          aria-label="Password"
+        />
       </div>
 
       <button type="submit" class="btn btn-primary" style="width:100%;margin-top:4px">Create Account</button>
@@ -70,6 +117,7 @@
 </div>
 
 <script src="js/store.js"></script>
+<script src="js/navbar.js"></script>
 <script>
   renderNavbar();
 
@@ -116,13 +164,31 @@
       alertEl.innerHTML = '<div class="alert alert-error">Password must be at least 6 characters.</div>'; return;
     }
 
-    try {
-      const user = registerUser(name, email, password);
-      saveAuth(user);
-      location.href = 'buyer/dashboard.html';
-    } catch (err) {
-      alertEl.innerHTML = `<div class="alert alert-error">${err.error || 'Registration failed'}</div>`;
+    // Check if user already exists
+    if (Store.findUserByEmail(email)) {
+      alertEl.innerHTML = '<div class="alert alert-error">An account with this email already exists.</div>'; return;
     }
+
+    // Create new user
+    const newUser = {
+      id: Date.now(),
+      name: name,
+      email: email,
+      password: password,
+      studentId: activeTab === 'id' ? document.getElementById('studentid-input').value.trim().toUpperCase() : null,
+      role: 'user',
+      createdAt: new Date().toISOString()
+    };
+
+    // Save user
+    Store.addUser(newUser);
+    Store.setCurrentUser(newUser, true);
+
+    alertEl.innerHTML = '<div class="alert alert-success">Account created successfully! Redirecting...</div>';
+    
+    setTimeout(() => {
+      location.href = 'index.html';
+    }, 1000);
   }
 </script>
 </body>
