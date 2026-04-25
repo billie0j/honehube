@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Honehube</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .dashboard-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    .dashboard-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 32px;
+    }
+    .dashboard-header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .stat-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+    .stat-value {
+      font-size: 36px;
+      font-weight: bold;
+      color: #333;
+      margin: 10px 0;
+    }
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-change {
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .stat-change.positive {
+      color: #28a745;
+    }
+    .stat-change.negative {
+      color: #dc3545;
+    }
+    .dashboard-section {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    .section-header h2 {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
+    }
+    .section-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary-small {
+      background: #667eea;
+      color: white;
+    }
+    .btn-primary-small:hover {
+      background: #5568d3;
+    }
+    .btn-secondary-small {
+      background: #6c757d;
+      color: white;
+    }
+    .btn-secondary-small:hover {
+      background: #5a6268;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .data-table th {
+      background: #f8f9fa;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #333;
+      border-bottom: 2px solid #dee2e6;
+    }
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .data-table tr:hover {
+      background: #f8f9fa;
+    }
+    .badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .badge-warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .badge-danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .badge-info {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s;
+    }
+    .action-btn-edit {
+      background: #ffc107;
+      color: #000;
+    }
+    .action-btn-delete {
+      background: #dc3545;
+      color: white;
+    }
+    .action-btn-view {
+      background: #17a2b8;
+      color: white;
+    }
+    .action-btn:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .quick-action-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+    .quick-action-card:hover {
+      border-color: #667eea;
+      transform: translateY(-3px);
+    }
+    .quick-action-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .quick-action-label {
+      font-weight: 600;
+      color: #333;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar"></nav>
+
+<div class="dashboard-container">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <h1>👨‍💼 Admin Dashboard</h1>
+    <p>Welcome back, <span id="admin-name">Admin</span>! Here's what's happening with Honehube today.</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value" id="total-users">0</div>
+      <div class="stat-label">Total Users</div>
+      <div class="stat-change positive">↑ <span id="users-change">0</span> this week</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-value" id="total-listings">0</div>
+      <div class="stat-label">Active Listings</div>
+      <div class="stat-change positive">↑ <span id="listings-change">0</span> this week</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-value">K<span id="total-revenue">0</span></div>
+      <div class="stat-label">Total Value</div>
+      <div class="stat-change positive">↑ <span id="revenue-change">0</span>% this month</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📧</div>
+      <div class="stat-value" id="total-inquiries">0</div>
+      <div class="stat-label">Inquiries</div>
+      <div class="stat-change positive">↑ <span id="inquiries-change">0</span> pending</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <div class="quick-action-card" onclick="location.href='#users'">
+      <div class="quick-action-icon">👥</div>
+      <div class="quick-action-label">Manage Users</div>
+    </div>
+    <div class="quick-action-card" onclick="location.href='#listings'">
+      <div class="quick-action-icon">📦</div>
+      <div class="quick-action-label">Manage Listings</div>
+    </div>
+    <div class="quick-action-card" onclick="location.href='#inquiries'">
+      <div class="quick-action-icon">📧</div>
+      <div class="quick-action-label">View Inquiries</div>
+    </div>
+    <div class="quick-action-card" onclick="showReports()">
+      <div class="quick-action-icon">📊</div>
+      <div class="quick-action-label">Reports</div>
+    </div>
+  </div>
+
+  <!-- Recent Users Section -->
+  <div class="dashboard-section" id="users">
+    <div class="section-header">
+      <h2>👥 Recent Users</h2>
+      <div class="section-actions">
+        <button class="btn-small btn-secondary-small" onclick="exportUsers()">📥 Export</button>
+        <button class="btn-small btn-primary-small" onclick="refreshUsers()">🔄 Refresh</button>
+      </div>
+    </div>
+    <div id="users-table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Student ID</th>
+            <th>Role</th>
+            <th>Joined</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr>
+            <td colspan="8" class="empty-state">
+              <div class="empty-state-icon">👥</div>
+              <p>Loading users...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Listings Section -->
+  <div class="dashboard-section" id="listings">
+    <div class="section-header">
+      <h2>📦 Recent Listings</h2>
+      <div class="section-actions">
+        <button class="btn-small btn-secondary-small" onclick="exportListings()">📥 Export</button>
+        <button class="btn-small btn-primary-small" onclick="refreshListings()">🔄 Refresh</button>
+      </div>
+    </div>
+    <div id="listings-table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Condition</th>
+            <th>Seller</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="listings-tbody">
+          <tr>
+            <td colspan="8" class="empty-state">
+              <div class="empty-state-icon">📦</div>
+              <p>Loading listings...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Inquiries Section -->
+  <div class="dashboard-section" id="inquiries">
+    <div class="section-header">
+      <h2>📧 Recent Inquiries</h2>
+      <div class="section-actions">
+        <button class="btn-small btn-primary-small" onclick="refreshInquiries()">🔄 Refresh</button>
+      </div>
+    </div>
+    <div id="inquiries-table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Listing</th>
+            <th>Buyer</th>
+            <th>Seller</th>
+            <th>Message</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inquiries-tbody">
+          <tr>
+            <td colspan="8" class="empty-state">
+              <div class="empty-state-icon">📧</div>
+              <p>No inquiries yet</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/api.js"></script>
+<script src="js/navbar.js"></script>
+<script>
+  // Check if user is admin
+  async function checkAdminAccess() {
+    const user = await HybridStore.getCurrentUser();
+    if (!user) {
+      alert('Please login to access the dashboard');
+      location.href = 'login.html';
+      return false;
+    }
+    if (user.role !== 'admin') {
+      alert('Access denied. Admin privileges required.');
+      location.href = 'index.html';
+      return false;
+    }
+    document.getElementById('admin-name').textContent = user.name;
+    return true;
+  }
+
+  // Initialize dashboard
+  async function initDashboard() {
+    renderNavbar();
+    await HybridStore.init();
+    
+    const hasAccess = await checkAdminAccess();
+    if (!hasAccess) return;
+
+    loadStatistics();
+    loadUsers();
+    loadListings();
+    loadInquiries();
+  }
+
+  // Load statistics
+  function loadStatistics() {
+    const users = Store.getUsers();
+    const listings = Store.getListings();
+    
+    document.getElementById('total-users').textContent = users.length;
+    document.getElementById('total-listings').textContent = listings.filter(l => l.status === 'active').length;
+    
+    const totalValue = listings.reduce((sum, l) => sum + parseFloat(l.price || 0), 0);
+    document.getElementById('total-revenue').textContent = totalValue.toFixed(2);
+    
+    // Mock data for changes
+    document.getElementById('users-change').textContent = Math.floor(users.length * 0.1);
+    document.getElementById('listings-change').textContent = Math.floor(listings.length * 0.15);
+    document.getElementById('revenue-change').textContent = '12';
+    document.getElementById('inquiries-change').textContent = '3';
+    document.getElementById('total-inquiries').textContent = '8';
+  }
+
+  // Load users
+  function loadUsers() {
+    const users = Store.getUsers();
+    const tbody = document.getElementById('users-tbody');
+    
+    if (users.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">👥</div><p>No users found</p></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = users.slice(0, 10).map(user => `
+      <tr>
+        <td>${user.id}</td>
+        <td>${user.name}</td>
+        <td>${user.email}</td>
+        <td>${user.studentId || user.student_id || '-'}</td>
+        <td><span class="badge ${user.role === 'admin' ? 'badge-danger' : 'badge-info'}">${user.role}</span></td>
+        <td>${new Date(user.createdAt || user.created_at).toLocaleDateString()}</td>
+        <td><span class="badge badge-success">Active</span></td>
+        <td>
+          <div class="action-buttons">
+            <button class="action-btn action-btn-view" onclick="viewUser(${user.id})">View</button>
+            <button class="action-btn action-btn-edit" onclick="editUser(${user.id})">Edit</button>
+            ${user.role !== 'admin' ? `<button class="action-btn action-btn-delete" onclick="deleteUser(${user.id})">Delete</button>` : ''}
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // Load listings
+  function loadListings() {
+    const listings = Store.getListings();
+    const users = Store.getUsers();
+    const tbody = document.getElementById('listings-tbody');
+    
+    if (listings.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">📦</div><p>No listings found</p></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = listings.slice(0, 10).map(listing => {
+      const seller = users.find(u => u.id === listing.user_id || u.id === listing.seller_id);
+      return `
+        <tr>
+          <td>${listing.id}</td>
+          <td>${listing.title}</td>
+          <td>${listing.category}</td>
+          <td>K${parseFloat(listing.price).toFixed(2)}</td>
+          <td><span class="badge ${listing.condition_type === 'new' ? 'badge-success' : 'badge-warning'}">${listing.condition_type}</span></td>
+          <td>${seller ? seller.name : 'Unknown'}</td>
+          <td><span class="badge ${listing.status === 'active' ? 'badge-success' : 'badge-danger'}">${listing.status}</span></td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-btn action-btn-view" onclick="viewListing(${listing.id})">View</button>
+              <button class="action-btn action-btn-edit" onclick="editListing(${listing.id})">Edit</button>
+              <button class="action-btn action-btn-delete" onclick="deleteListing(${listing.id})">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Load inquiries
+  function loadInquiries() {
+    // Mock data for now
+    const tbody = document.getElementById('inquiries-tbody');
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">📧</div><p>No inquiries yet</p></td></tr>';
+  }
+
+  // Action functions
+  function viewUser(id) {
+    alert('View user: ' + id);
+  }
+
+  function editUser(id) {
+    alert('Edit user: ' + id);
+  }
+
+  function deleteUser(id) {
+    if (confirm('Are you sure you want to delete this user?')) {
+      alert('Delete user: ' + id);
+      refreshUsers();
+    }
+  }
+
+  function viewListing(id) {
+    location.href = 'listing.html?id=' + id;
+  }
+
+  function editListing(id) {
+    alert('Edit listing: ' + id);
+  }
+
+  function deleteListing(id) {
+    if (confirm('Are you sure you want to delete this listing?')) {
+      alert('Delete listing: ' + id);
+      refreshListings();
+    }
+  }
+
+  function refreshUsers() {
+    loadUsers();
+    loadStatistics();
+  }
+
+  function refreshListings() {
+    loadListings();
+    loadStatistics();
+  }
+
+  function refreshInquiries() {
+    loadInquiries();
+  }
+
+  function exportUsers() {
+    alert('Export users functionality coming soon!');
+  }
+
+  function exportListings() {
+    alert('Export listings functionality coming soon!');
+  }
+
+  function showReports() {
+    alert('Reports functionality coming soon!');
+  }
+
+  // Initialize on page load
+  initDashboard();
+</script>
+
+</body>
+</html>

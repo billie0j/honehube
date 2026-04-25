@@ -1,9 +1,15 @@
 // Honehub - Navbar Component
-function renderNavbar() {
+async function renderNavbar() {
   const navbar = document.getElementById('navbar');
   if (!navbar) return;
 
-  const user = Store.getCurrentUser();
+  // Try to get user from HybridStore if available
+  let user = null;
+  if (typeof HybridStore !== 'undefined' && HybridStore.useAPI !== undefined) {
+    user = await HybridStore.getCurrentUser();
+  } else {
+    user = Store.getCurrentUser();
+  }
   
   let navbarHTML = `
     <div class="navbar-brand">
@@ -15,6 +21,13 @@ function renderNavbar() {
   `;
 
   if (user) {
+    // Add dashboard link based on role
+    if (user.role === 'admin') {
+      navbarHTML += `<a href="admin-dashboard.html">📊 Admin Dashboard</a>`;
+    } else {
+      navbarHTML += `<a href="dashboard.html">📊 My Dashboard</a>`;
+    }
+    
     navbarHTML += `
       <a href="#" class="user-greeting">Hello, ${user.name || user.email}</a>
       <a href="#" onclick="handleLogout(event)">Logout</a>
@@ -31,9 +44,16 @@ function renderNavbar() {
 }
 
 // Logout function
-function handleLogout(event) {
+async function handleLogout(event) {
   if (event) event.preventDefault();
-  Store.logout();
+  
+  // Use HybridStore if available
+  if (typeof HybridStore !== 'undefined' && HybridStore.useAPI !== undefined) {
+    await HybridStore.logout();
+  } else {
+    Store.logout();
+  }
+  
   window.location.href = 'index.html';
 }
 
