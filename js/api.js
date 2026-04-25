@@ -122,6 +122,219 @@ const API = {
     } catch {
       return false;
     }
+  },
+
+  // ========== LISTINGS API ==========
+
+  /**
+   * Get all listings
+   */
+  async getListings(filters = {}) {
+    const params = new URLSearchParams(filters);
+    return await this.request(`/listings.php?action=list&${params}`);
+  },
+
+  /**
+   * Get single listing
+   */
+  async getListing(id) {
+    return await this.request(`/listings.php?action=get&id=${id}`);
+  },
+
+  /**
+   * Create new listing (Admin only)
+   */
+  async createListing(listingData) {
+    return await this.request('/listings.php?action=create', {
+      method: 'POST',
+      body: JSON.stringify({
+        ...listingData,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Update listing (Admin only)
+   */
+  async updateListing(id, listingData) {
+    return await this.request('/listings.php?action=update', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        ...listingData,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Delete listing (Admin only)
+   */
+  async deleteListing(id) {
+    return await this.request('/listings.php?action=delete', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  // ========== PURCHASE REQUESTS API ==========
+
+  /**
+   * Get all purchase requests
+   */
+  async getRequests(filters = {}) {
+    const params = new URLSearchParams(filters);
+    return await this.request(`/requests.php?action=list&${params}`);
+  },
+
+  /**
+   * Get single purchase request
+   */
+  async getRequest(id) {
+    return await this.request(`/requests.php?action=get&id=${id}`);
+  },
+
+  /**
+   * Create purchase request
+   */
+  async createRequest(requestData) {
+    return await this.request('/requests.php?action=create', {
+      method: 'POST',
+      body: JSON.stringify({
+        ...requestData,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Accept purchase request (Admin only)
+   */
+  async acceptRequest(id) {
+    return await this.request('/requests.php?action=accept', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Deny purchase request (Admin only)
+   */
+  async denyRequest(id, reason = '') {
+    return await this.request('/requests.php?action=deny', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        reason,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Make counter-offer (Admin only)
+   */
+  async counterOffer(id, offeredPrice, message = '') {
+    return await this.request('/requests.php?action=counter', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        offered_price: offeredPrice,
+        message,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Cancel purchase request
+   */
+  async cancelRequest(id) {
+    return await this.request('/requests.php?action=cancel', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  // ========== USERS API ==========
+
+  /**
+   * Get all users (Admin only)
+   */
+  async getUsers(filters = {}) {
+    const params = new URLSearchParams(filters);
+    return await this.request(`/users.php?action=list&${params}`);
+  },
+
+  /**
+   * Get single user (Admin only)
+   */
+  async getUserDetails(id) {
+    return await this.request(`/users.php?action=get&id=${id}`);
+  },
+
+  /**
+   * Update user (Admin only)
+   */
+  async updateUser(id, userData) {
+    return await this.request('/users.php?action=update', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        ...userData,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Deactivate user (Admin only)
+   */
+  async deactivateUser(id, reason = '') {
+    return await this.request('/users.php?action=deactivate', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        reason,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Activate user (Admin only)
+   */
+  async activateUser(id) {
+    return await this.request('/users.php?action=activate', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Delete user (Admin only)
+   */
+  async deleteUser(id) {
+    return await this.request('/users.php?action=delete', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        csrf_token: this.csrfToken
+      })
+    });
   }
 };
 
