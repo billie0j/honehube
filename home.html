@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Honehube — Evlyne Hone College Laptop Marketplace</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/home.css" />
+</head>
+<body>
+
+<nav class="navbar" id="navbar"></nav>
+
+<!-- Hero -->
+<section class="home-hero">
+  <div class="home-hero-content">
+    <div class="home-hero-badge">🎓 Evlyne Hone College</div>
+    <h1>Buy &amp; Sell Laptops<br>on Campus</h1>
+    <p>Honehube is the trusted marketplace for students and staff to buy, sell and find laptop parts — all within Evlyne Hone College.</p>
+    <div class="home-hero-actions">
+      <a href="index.html" class="btn btn-primary btn-lg">Browse Listings</a>
+      <a href="register.html" class="btn btn-outline-white btn-lg">Join Free</a>
+    </div>
+  </div>
+  <div class="home-hero-visual">
+    <div class="hero-laptop">💻</div>
+  </div>
+</section>
+
+<!-- Stats bar -->
+<section class="home-stats">
+  <div class="home-stat">
+    <span class="home-stat-value" id="hs-listings">0</span>
+    <span class="home-stat-label">Active Listings</span>
+  </div>
+  <div class="home-stat-divider"></div>
+  <div class="home-stat">
+    <span class="home-stat-value" id="hs-categories">8</span>
+    <span class="home-stat-label">Categories</span>
+  </div>
+  <div class="home-stat-divider"></div>
+  <div class="home-stat">
+    <span class="home-stat-value" id="hs-users">0</span>
+    <span class="home-stat-label">Registered Users</span>
+  </div>
+</section>
+
+<!-- Categories -->
+<section class="home-section">
+  <div class="home-section-header">
+    <h2>Shop by Category</h2>
+    <a href="index.html" class="home-see-all">See all →</a>
+  </div>
+  <div class="home-categories">
+    <a href="index.html?cat=Laptops"     class="home-cat-card"><span>💻</span><p>Laptops</p></a>
+    <a href="index.html?cat=RAM"         class="home-cat-card"><span>🧠</span><p>RAM</p></a>
+    <a href="index.html?cat=Storage"     class="home-cat-card"><span>💾</span><p>Storage</p></a>
+    <a href="index.html?cat=Screens"     class="home-cat-card"><span>🖥️</span><p>Screens</p></a>
+    <a href="index.html?cat=Keyboards"   class="home-cat-card"><span>⌨️</span><p>Keyboards</p></a>
+    <a href="index.html?cat=Chargers"    class="home-cat-card"><span>🔌</span><p>Chargers</p></a>
+    <a href="index.html?cat=Accessories" class="home-cat-card"><span>🎒</span><p>Accessories</p></a>
+  </div>
+</section>
+
+<!-- Featured listings -->
+<section class="home-section">
+  <div class="home-section-header">
+    <h2>Latest Listings</h2>
+    <a href="index.html" class="home-see-all">View all →</a>
+  </div>
+  <div class="listings-grid" id="featured-listings"></div>
+</section>
+
+<!-- How it works -->
+<section class="home-section home-how">
+  <h2>How it works</h2>
+  <div class="home-steps">
+    <div class="home-step">
+      <div class="home-step-icon">📝</div>
+      <h3>Register</h3>
+      <p>Sign up with your college email, student ID, or Gmail in seconds.</p>
+    </div>
+    <div class="home-step-arrow">→</div>
+    <div class="home-step">
+      <div class="home-step-icon">🔍</div>
+      <h3>Browse</h3>
+      <p>Search and filter laptops and parts listed by the admin.</p>
+    </div>
+    <div class="home-step-arrow">→</div>
+    <div class="home-step">
+      <div class="home-step-icon">💬</div>
+      <h3>Inquire</h3>
+      <p>Send a message on any listing and the admin will get back to you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="home-cta">
+  <h2>Ready to find your next laptop?</h2>
+  <p>Join hundreds of Evlyne Hone College students already using Honehube.</p>
+  <div class="home-hero-actions">
+    <a href="register.html" class="btn btn-primary btn-lg">Create Account</a>
+    <a href="index.html"    class="btn btn-outline-white btn-lg">Browse Now</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="home-footer">
+  <div class="home-footer-inner">
+    <div class="home-footer-brand">
+      <span>💻</span>
+      <div>
+        <strong>Honehube</strong>
+        <small>Evlyne Hone College Laptop Marketplace</small>
+      </div>
+    </div>
+    <div class="home-footer-links">
+      <a href="home.html">Home</a>
+      <a href="index.html">Browse</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+    </div>
+    <p class="home-footer-copy">© 2024 Honehube · Evlyne Hone College</p>
+  </div>
+</footer>
+
+<script src="js/store.js"></script>
+<script>
+  renderNavbar();
+
+  // Stats
+  document.getElementById('hs-listings').textContent = getListings().filter(l => l.status === 'active').length;
+  document.getElementById('hs-users').textContent    = getUsers().length;
+
+  // Featured — latest 4
+  const featured = getListings().filter(l => l.status === 'active').slice(0, 4);
+  document.getElementById('featured-listings').innerHTML = featured.map(l => `
+    <a href="listing.html?id=${l.id}" class="listing-card card">
+      <div class="listing-img">
+        ${l.image ? `<img src="${l.image}" alt="${l.title}" />` : `<div class="listing-img-placeholder">💻</div>`}
+      </div>
+      <div class="listing-info">
+        <span class="badge badge-${l.condition_type}">${l.condition_type}</span>
+        <h3>${l.title}</h3>
+        <p class="listing-category">${l.category}</p>
+        <p class="listing-price">K${parseFloat(l.price).toFixed(2)}</p>
+        <p class="listing-seller">by ${l.seller_name}</p>
+      </div>
+    </a>`).join('');
+</script>
+</body>
+</html>

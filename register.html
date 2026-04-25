@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — Honehube</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav class="navbar" id="navbar"></nav>
+
+<div class="auth-page">
+  <div class="auth-card card">
+    <div class="auth-header">
+      <div class="auth-icon">💻</div>
+      <h2>Create account</h2>
+      <p>Join Honehube — Evlyne Hone College</p>
+    </div>
+
+    <div id="alert"></div>
+
+    <!-- Toggle: Email vs Student ID vs Gmail -->
+    <div class="tab-switch">
+      <button class="active" id="tab-email" onclick="switchTab('email')">College Email</button>
+      <button id="tab-id" onclick="switchTab('id')">Student ID</button>
+      <button id="tab-gmail" onclick="switchTab('gmail')">Gmail</button>
+    </div>
+
+    <form onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="Your full name" required />
+      </div>
+
+      <!-- College Email input -->
+      <div class="form-group" id="group-email">
+        <label>College Email</label>
+        <input type="email" id="email-input" placeholder="b123456@evlynehone.ac.zw" autocomplete="email" />
+        <p class="field-hint">Use your official Evlyne Hone College email</p>
+      </div>
+
+      <!-- Student ID input -->
+      <div class="form-group" id="group-id" style="display:none">
+        <label>Student ID</label>
+        <div class="input-suffix">
+          <input type="text" id="studentid-input" placeholder="B123456" autocomplete="off" />
+          <span class="suffix-label">@evlynehone.ac.zw</span>
+        </div>
+        <p class="field-hint">Enter your student ID — your email will be ID@evlynehone.ac.zw</p>
+      </div>
+
+      <!-- Gmail / any email input -->
+      <div class="form-group" id="group-gmail" style="display:none">
+        <label>Email Address</label>
+        <input type="email" id="gmail-input" placeholder="enock@gmail.com" autocomplete="email" />
+        <p class="field-hint">Any valid email address is accepted</p>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="new-password" />
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:4px">Create Account</button>
+    </form>
+
+    <p class="auth-footer">Already have an account? <a href="login.html">Login</a></p>
+  </div>
+</div>
+
+<script src="js/store.js"></script>
+<script>
+  renderNavbar();
+
+  let activeTab = 'email';
+
+  function switchTab(tab) {
+    activeTab = tab;
+    document.getElementById('group-email').style.display = tab === 'email' ? 'block' : 'none';
+    document.getElementById('group-id').style.display    = tab === 'id'    ? 'block' : 'none';
+    document.getElementById('group-gmail').style.display = tab === 'gmail' ? 'block' : 'none';
+    ['email','id','gmail'].forEach(t =>
+      document.getElementById('tab-' + t).classList.toggle('active', t === tab)
+    );
+  }
+
+  function handleRegister(e) {
+    e.preventDefault();
+    const alertEl = document.getElementById('alert');
+    alertEl.innerHTML = '';
+
+    const name     = document.getElementById('name').value.trim();
+    const password = document.getElementById('password').value;
+
+    let email = '';
+    if (activeTab === 'email') {
+      email = document.getElementById('email-input').value.trim();
+      if (!email) { alertEl.innerHTML = '<div class="alert alert-error">Please enter your college email.</div>'; return; }
+      if (!email.endsWith('@evlynehone.ac.zw')) {
+        alertEl.innerHTML = '<div class="alert alert-error">Email must end with @evlynehone.ac.zw</div>'; return;
+      }
+    } else if (activeTab === 'id') {
+      const sid = document.getElementById('studentid-input').value.trim();
+      if (!sid) { alertEl.innerHTML = '<div class="alert alert-error">Please enter your student ID.</div>'; return; }
+      email = `${sid.toLowerCase()}@evlynehone.ac.zw`;
+    } else {
+      email = document.getElementById('gmail-input').value.trim();
+      if (!email) { alertEl.innerHTML = '<div class="alert alert-error">Please enter your email address.</div>'; return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alertEl.innerHTML = '<div class="alert alert-error">Please enter a valid email address.</div>'; return;
+      }
+    }
+
+    if (password.length < 6) {
+      alertEl.innerHTML = '<div class="alert alert-error">Password must be at least 6 characters.</div>'; return;
+    }
+
+    try {
+      const user = registerUser(name, email, password);
+      saveAuth(user);
+      location.href = 'buyer/dashboard.html';
+    } catch (err) {
+      alertEl.innerHTML = `<div class="alert alert-error">${err.error || 'Registration failed'}</div>`;
+    }
+  }
+</script>
+</body>
+</html>

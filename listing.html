@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Listing — Honehube</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav class="navbar" id="navbar"></nav>
+
+<div class="detail-page" id="detail-page">
+  <button class="back-btn" onclick="history.back()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Back
+  </button>
+  <div id="detail-content"><p class="loading-msg">Loading...</p></div>
+</div>
+
+<script src="js/store.js"></script>
+<script>
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) location.href = 'index.html';
+
+  function load() {
+    const l = getListing(id);
+    const page = document.getElementById('detail-content');
+    if (!l) { page.innerHTML = '<p class="empty-msg">Listing not found.</p>'; return; }
+
+    page.innerHTML = `
+      <div class="detail-container card">
+        <div class="detail-img">
+          ${l.image ? `<img src="${l.image}" alt="${l.title}" />` : `<div class="detail-img-placeholder">📱</div>`}
+        </div>
+        <div class="detail-info">
+          <span class="badge badge-${l.condition_type}">${l.condition_type}</span>
+          ${l.status !== 'active' ? `<span class="badge badge-sold" style="margin-left:8px">${l.status}</span>` : ''}
+          <h1>${l.title}</h1>
+          <p class="detail-price">K${parseFloat(l.price).toFixed(2)}</p>
+          <p class="detail-category">Category: ${l.category}</p>
+          <p class="detail-desc">${l.description || ''}</p>
+          <div class="seller-box"><strong>Seller:</strong> ${l.seller_name}</div>
+          ${l.status === 'active' ? `
+          <div class="inquiry-box">
+            <h3>Interested? Send a message</h3>
+            <div id="inq-alert"></div>
+            <textarea id="inq-text" rows="4" placeholder="Hi, I'm interested in this item..."></textarea>
+            <button class="btn btn-primary" onclick="sendInquiry(${l.id})">Send Inquiry</button>
+          </div>` : ''}
+        </div>
+      </div>`;
+  }
+
+  function sendInquiry(listingId) {
+    const user = getUser();
+    if (!user) { location.href = 'login.html'; return; }
+    const message = document.getElementById('inq-text').value.trim();
+    const alertEl = document.getElementById('inq-alert');
+    if (!message) { alertEl.innerHTML = '<div class="alert alert-error">Please enter a message.</div>'; return; }
+    createInquiry(listingId, message);
+    alertEl.innerHTML = '<div class="alert alert-success">Inquiry sent! The admin will follow up.</div>';
+    document.getElementById('inq-text').value = '';
+  }
+
+  renderNavbar();
+  load();
+</script>
+</body>
+</html>
