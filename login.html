@@ -37,7 +37,7 @@
 
     <div id="alert"></div>
 
-    <form method="POST" onsubmit="handleLogin(event)">
+    <form method="POST" name="loginForm" onsubmit="return validateLoginForm(event)">
       <!-- CSRF Token Protection -->
       <input type="hidden" name="csrf_token" id="csrf_token" value="">
       
@@ -161,6 +161,55 @@
   if (remembered) {
     document.getElementById('email').value    = remembered;
     document.getElementById('remember').checked = true;
+  }
+
+  // JavaScript Form Validation (Extra Layer)
+  function validateLoginForm(e) {
+    e.preventDefault();
+    const alertEl = document.getElementById('alert');
+    alertEl.innerHTML = '';
+
+    // Get form values
+    const email = document.forms["loginForm"]["email"].value.trim();
+    const password = document.forms["loginForm"]["password"].value;
+
+    // Validate email/student ID
+    if (email === '') {
+      alertEl.innerHTML = '<div class="alert alert-error">Please enter your email or student ID.</div>';
+      document.getElementById('email').focus();
+      return false;
+    }
+
+    if (email.length < 3) {
+      alertEl.innerHTML = '<div class="alert alert-error">Email or student ID is too short.</div>';
+      document.getElementById('email').focus();
+      return false;
+    }
+
+    // Validate password
+    if (password === '') {
+      alertEl.innerHTML = '<div class="alert alert-error">Please enter your password.</div>';
+      document.getElementById('password').focus();
+      return false;
+    }
+
+    if (password.length < 8) {
+      alertEl.innerHTML = '<div class="alert alert-error">Password must be at least 8 characters.</div>';
+      document.getElementById('password').focus();
+      return false;
+    }
+
+    // Check password strength pattern
+    const passwordPattern = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#$%^&+=!])/;
+    if (!passwordPattern.test(password)) {
+      alertEl.innerHTML = '<div class="alert alert-error">Password must contain uppercase, lowercase, number and special character.</div>';
+      document.getElementById('password').focus();
+      return false;
+    }
+
+    // If all validations pass, proceed to handleLogin
+    handleLogin(e);
+    return false; // Prevent default form submission
   }
 
   function handleLogin(e) {

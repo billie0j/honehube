@@ -29,7 +29,7 @@
       <button id="tab-gmail" onclick="switchTab('gmail')">Gmail</button>
     </div>
 
-    <form method="POST" onsubmit="handleRegister(event)">
+    <form method="POST" name="registerForm" onsubmit="return validateRegisterForm(event)">
       <!-- CSRF Token Protection -->
       <input type="hidden" name="csrf_token" id="csrf_token" value="">
       
@@ -162,6 +162,97 @@
     ['email','id','gmail'].forEach(t =>
       document.getElementById('tab-' + t).classList.toggle('active', t === tab)
     );
+  }
+
+  // JavaScript Form Validation (Extra Layer)
+  function validateRegisterForm(e) {
+    e.preventDefault();
+    const alertEl = document.getElementById('alert');
+    alertEl.innerHTML = '';
+
+    // Get form values
+    const name = document.getElementById('name').value.trim();
+    const password = document.getElementById('password').value;
+
+    // Validate name
+    if (name === '') {
+      alertEl.innerHTML = '<div class="alert alert-error">Please enter your full name.</div>';
+      document.getElementById('name').focus();
+      return false;
+    }
+
+    if (name.length < 2) {
+      alertEl.innerHTML = '<div class="alert alert-error">Name must be at least 2 characters.</div>';
+      document.getElementById('name').focus();
+      return false;
+    }
+
+    // Validate email based on active tab
+    let email = '';
+    if (activeTab === 'email') {
+      email = document.getElementById('email-input').value.trim();
+      if (email === '') {
+        alertEl.innerHTML = '<div class="alert alert-error">Please enter your college email.</div>';
+        document.getElementById('email-input').focus();
+        return false;
+      }
+      if (!email.endsWith('@evlynehone.ac.zw')) {
+        alertEl.innerHTML = '<div class="alert alert-error">College email must end with @evlynehone.ac.zw</div>';
+        document.getElementById('email-input').focus();
+        return false;
+      }
+    } else if (activeTab === 'id') {
+      const sid = document.getElementById('studentid-input').value.trim();
+      if (sid === '') {
+        alertEl.innerHTML = '<div class="alert alert-error">Please enter your student ID.</div>';
+        document.getElementById('studentid-input').focus();
+        return false;
+      }
+      const sidPattern = /^[a-zA-Z][0-9]{5,6}$/;
+      if (!sidPattern.test(sid)) {
+        alertEl.innerHTML = '<div class="alert alert-error">Student ID must start with a letter followed by 5-6 digits.</div>';
+        document.getElementById('studentid-input').focus();
+        return false;
+      }
+    } else {
+      email = document.getElementById('gmail-input').value.trim();
+      if (email === '') {
+        alertEl.innerHTML = '<div class="alert alert-error">Please enter your email address.</div>';
+        document.getElementById('gmail-input').focus();
+        return false;
+      }
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        alertEl.innerHTML = '<div class="alert alert-error">Please enter a valid email address.</div>';
+        document.getElementById('gmail-input').focus();
+        return false;
+      }
+    }
+
+    // Validate password
+    if (password === '') {
+      alertEl.innerHTML = '<div class="alert alert-error">Please enter a password.</div>';
+      document.getElementById('password').focus();
+      return false;
+    }
+
+    if (password.length < 8) {
+      alertEl.innerHTML = '<div class="alert alert-error">Password must be at least 8 characters.</div>';
+      document.getElementById('password').focus();
+      return false;
+    }
+
+    // Check password strength pattern
+    const passwordPattern = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#$%^&+=!])/;
+    if (!passwordPattern.test(password)) {
+      alertEl.innerHTML = '<div class="alert alert-error">Password must contain uppercase, lowercase, number and special character.</div>';
+      document.getElementById('password').focus();
+      return false;
+    }
+
+    // If all validations pass, proceed to handleRegister
+    handleRegister(e);
+    return false; // Prevent default form submission
   }
 
   function handleRegister(e) {
