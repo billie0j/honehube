@@ -8,30 +8,60 @@
   <!-- Google reCAPTCHA -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <style>
-    .slideshow-container {
-      position: absolute;
+    /* Full screen background */
+    .login-page-wrapper {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 20px;
+    }
+    
+    /* Background image */
+    .background-image {
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       z-index: 1;
     }
-    .slide {
-      position: absolute;
+    
+    .background-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    
+    /* Dark overlay for better readability */
+    .overlay {
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      opacity: 0;
-      transition: opacity 1.5s ease-in-out;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2;
     }
-    .slide.active {
-      opacity: 1;
-    }
-    .slide img {
+    
+    /* Login form container */
+    .login-form-container {
+      position: relative;
+      z-index: 3;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      max-width: 450px;
+      margin: 0 auto;
+    }
+    
+    /* Enhanced card styling */
+    .login-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
   </style>
 </head>
@@ -40,22 +70,18 @@
 <nav class="navbar" id="navbar"></nav>
 
 <!-- Full Screen Background with Login Form Overlay -->
-<div class="login-page-wrapper" style="position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-  <!-- Slideshow Background -->
-  <div class="slideshow-container">
-    <div class="slide active">
-      <img src="../assets/images/building.png" alt="Evlyne Hone College Building" />
-    </div>
-    <div class="slide">
-      <img src="../assets/images/market.jpg" alt="Campus Market" />
-    </div>
-    <!-- Dark overlay for better text readability -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
+<div class="login-page-wrapper">
+  <!-- Background Image -->
+  <div class="background-image">
+    <img src="../assets/images/building.png" alt="Evlyne Hone College Building" />
   </div>
+  
+  <!-- Dark overlay for better text readability -->
+  <div class="overlay"></div>
 
   <!-- Login Form Centered -->
-  <div class="auth-page" style="position: relative; z-index: 2; width: 100%; max-width: 450px; padding: 20px;">
-    <div class="auth-card card" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+  <div class="login-form-container">
+    <div class="auth-card card login-card">
     <div class="auth-header">
       <div class="auth-icon">💻</div>
       <h2>Welcome back</h2>
@@ -379,19 +405,6 @@
   }
 
   loadListings();
-
-  // Background Image Slideshow
-  let currentSlide = 0;
-  const slides = document.querySelectorAll('.slide');
-  
-  function showNextSlide() {
-    slides[currentSlide].classList.remove('active');
-    currentSlide = (currentSlide + 1) % slides.length;
-    slides[currentSlide].classList.add('active');
-  }
-  
-  // Change slide every 5 seconds
-  setInterval(showNextSlide, 5000);
 </script>
 </body>
 </html>
