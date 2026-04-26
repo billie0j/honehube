@@ -4,7 +4,7 @@
  * Handles login, register, and logout
  */
 
-require_once 'config.php';
+require_once '../config/config.php';
 
 // Start session and set CORS headers
 startSecureSession();
@@ -128,6 +128,15 @@ function loginUser($db) {
         sendJSON(['success' => false, 'message' => 'Invalid email or password'], 400);
     }
     
+    // Check if account is locked
+    if (isAccountLocked($identifier)) {
+        $minutesRemaining = getLockoutTimeRemaining($identifier);
+        sendJSON([
+            'success' => false, 
+            'message' => "Account temporarily locked due to too many failed login attempts. Please try again in {$minutesRemaining} minutes."
+        ], 429);
+    }
+    
     // Check rate limiting
     $ip = $_SERVER['REMOTE_ADDR'];
     $stmt = $db->prepare("
@@ -141,7 +150,12 @@ function loginUser($db) {
     $result = $stmt->fetch();
     
     if ($result['attempts'] >= MAX_LOGIN_ATTEMPTS) {
-        sendJSON(['success' => false, 'message' => 'Too many failed attempts. Please try again later.'], 429);
+        // Lock the account
+        lockAccount($identifier);
+        sendJSON([
+            'success' => false, 
+            'message' => 'Too many failed attempts. Your account has been temporarily locked for 30 minutes.'
+        ], 429);
     }
     
     // Find user by email or student ID
@@ -155,6 +169,9 @@ function loginUser($db) {
     if ($user && verifyPassword($password, $user['password'])) {
         // Successful login
         $stmt->execute([$identifier, $ip, 1]);
+        
+        // Regenerate session ID for security
+        regenerateSession();
         
         // Set session
         $_SESSION['user_id'] = $user['user_id'];

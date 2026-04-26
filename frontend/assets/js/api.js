@@ -5,8 +5,8 @@
 
 const API = {
   baseURL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? '/honehube/api'  // Local development
-    : '/api',          // Production
+    ? '/honehube/backend/api'  // Local development
+    : '/backend/api',          // Production
 
   // CSRF token storage
   csrfToken: null,

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Honehube — Electronics Marketplace</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+
+<nav class="navbar" id="navbar"></nav>
+
+<div class="hero">
+  <h1>Honehube Laptop Marketplace</h1>
+  <p>Buy and sell laptops and laptop parts within Evlyne Hone College campus</p>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Search laptops, RAM, SSD, chargers..." maxlength="100" />
+    <button class="btn btn-primary" onclick="loadListings()">Search</button>
+  </div>
+</div>
+
+<div class="filters">
+  <div class="category-tabs">
+    <button class="tab active" onclick="setCategory(this,'')">All</button>
+    <button class="tab" onclick="setCategory(this,'Laptops')">Laptops</button>
+    <button class="tab" onclick="setCategory(this,'Chargers')">Chargers</button>
+    <button class="tab" onclick="setCategory(this,'Phones')">Phones</button>
+    <button class="tab" onclick="setCategory(this,'Bags')">Bags</button>
+    <button class="tab" onclick="setCategory(this,'Earphones')">Earphones</button>
+    <button class="tab" onclick="setCategory(this,'Books')">Books</button>
+    <button class="tab" onclick="setCategory(this,'RAM')">RAM</button>
+    <button class="tab" onclick="setCategory(this,'Storage')">Storage</button>
+    <button class="tab" onclick="setCategory(this,'Other')">Other</button>
+  </div>
+  <select id="condition-filter" onchange="displayListings()" style="width:auto">
+    <option value="">All Conditions</option>
+    <option value="new">New</option>
+    <option value="used">Used</option>
+  </select>
+</div>
+
+<div class="listings-section">
+  <div id="listings-container" class="listings-grid"></div>
+</div>
+
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/navbar.js"></script>
+<script>
+  let activeCategory = '';
+  let allListings = [];
+
+  function setCategory(el, cat) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    activeCategory = cat;
+    displayListings();
+  }
+
+  async function loadListings() {
+    const container = document.getElementById('listings-container');
+    container.innerHTML = '<p class="empty-msg">Loading items...</p>';
+
+    await HybridStore.init();
+
+    if (HybridStore.useAPI) {
+      const result = await API.getListings({ status: 'active' });
+      if (result.success) {
+        allListings = result.listings;
+      } else {
+        allListings = Store.getListings().filter(l => l.status === 'active');
+      }
+    } else {
+      allListings = Store.getListings().filter(l => l.status === 'active');
+    }
+
+    displayListings();
+  }
+
+  function displayListings() {
+    const search    = document.getElementById('search-input').value.toLowerCase();
+    const condition = document.getElementById('condition-filter').value;
+    const container = document.getElementById('listings-container');
+
+    let listings = [...allListings];
+    if (activeCategory) listings = listings.filter(l => l.category === activeCategory);
+    if (condition)      listings = listings.filter(l => l.condition_type === condition);
+    if (search)         listings = listings.filter(l => 
+      l.title.toLowerCase().includes(search) || 
+      (l.description||'').toLowerCase().includes(search)
+    );
+
+    if (!listings.length) {
+      container.innerHTML = '<p class="empty-msg">No items found. Try different filters.</p>';
+      return;
+    }
+
+    container.innerHTML = listings.map(l => `
+      <a href="listing.html?id=${l.id}" class="listing-card card">
+        <div class="listing-img">
+          ${l.image ? `<img src="${l.image}" alt="${l.title}" onerror="this.parentElement.innerHTML='<div class=\\'listing-img-placeholder\\'>📱</div>'" />` : `<div class="listing-img-placeholder">📱</div>`}
+        </div>
+        <div class="listing-info">
+          <span class="badge badge-${l.condition_type}">${l.condition_type}</span>
+          <h3>${l.title}</h3>
+          <p class="listing-category">${l.category}</p>
+          <p class="listing-price">K${parseFloat(l.price).toFixed(2)}</p>
+          ${l.seller_name ? `<p class="listing-seller">by ${l.seller_name}</p>` : ''}
+        </div>
+      </a>`).join('');
+  }
+
+  // Initialize
+  renderNavbar();
+
+  // pick up category from home page link e.g. index.html?cat=Laptops
+  const urlCat = new URLSearchParams(location.search).get('cat');
+  if (urlCat) {
+    activeCategory = urlCat;
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.getAttribute('onclick').includes(`'${urlCat}'`));
+    });
+  }
+
+  loadListings();
+
+  // Add search on Enter key
+  document.getElementById('search-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      displayListings();
+    }
+  });
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
  * Handles user CRUD operations (Admin only)
  */
 
-require_once 'config.php';
+require_once '../config/config.php';
 
 // Start session and set CORS headers
 startSecureSession();

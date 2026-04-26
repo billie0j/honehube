@@ -1,10 +1,10 @@
 <?php
 /**
- * Honehube Listings API
- * Handles CRUD operations for listings
+ * Honehube Accessories API
+ * Handles CRUD operations for accessories
  */
 
-require_once 'config.php';
+require_once '../config/config.php';
 
 // Start session and set CORS headers
 startSecureSession();
@@ -26,7 +26,7 @@ function requireAdmin() {
     }
     
     global $db;
-    $stmt = $db->prepare("SELECT role FROM users WHERE id = ?");
+    $stmt = $db->prepare("SELECT role FROM users WHERE user_id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch();
     
@@ -36,70 +36,70 @@ function requireAdmin() {
 }
 
 /**
- * Get all listings
+ * Get all accessories
  */
-function getListings($db) {
+function getAccessories($db) {
     $status = $_GET['status'] ?? 'all';
     $category = $_GET['category'] ?? 'all';
     $search = $_GET['search'] ?? '';
     
-    $sql = "SELECT l.*, u.name as seller_name, u.email as seller_email 
-            FROM listings l 
-            LEFT JOIN users u ON l.user_id = u.id 
+    $sql = "SELECT a.*, u.full_name as seller_name, u.email as seller_email 
+            FROM accessories a 
+            LEFT JOIN users u ON a.posted_by = u.user_id 
             WHERE 1=1";
     $params = [];
     
     if ($status !== 'all') {
-        $sql .= " AND l.status = ?";
+        $sql .= " AND a.status = ?";
         $params[] = $status;
     }
     
     if ($category !== 'all') {
-        $sql .= " AND l.category = ?";
+        $sql .= " AND a.category = ?";
         $params[] = $category;
     }
     
     if (!empty($search)) {
-        $sql .= " AND (l.title LIKE ? OR l.description LIKE ?)";
+        $sql .= " AND (a.item_name LIKE ? OR a.description LIKE ?)";
         $params[] = "%$search%";
         $params[] = "%$search%";
     }
     
-    $sql .= " ORDER BY l.created_at DESC";
+    $sql .= " ORDER BY a.created_at DESC";
     
     $stmt = $db->prepare($sql);
     $stmt->execute($params);
-    $listings = $stmt->fetchAll();
+    $accessories = $stmt->fetchAll();
     
-    sendJSON(['success' => true, 'listings' => $listings]);
+    sendJSON(['success' => true, 'accessories' => $accessories]);
 }
 
 /**
- * Get single listing
+ * Get single accessory
  */
-function getListing($db) {
+function getAccessory($db) {
     $id = $_GET['id'] ?? 0;
     
     $stmt = $db->prepare("
-        SELECT l.*, u.name as seller_name, u.email as seller_email 
-        FROM listings l 
-        LEFT JOIN users u ON l.user_id = u.id 
-        WHERE l.id = ?
+        SELECT a.*, u.full_name as seller_name, u.email as seller_email 
+        FROM accessories a 
+        LEFT JOIN users u ON a.posted_by = u.user_id 
+        WHERE a.item_id = ?
     ");
     $stmt->execute([$id]);
-    $listing = $stmt->fetch();
+    $accessory = $stmt->fetch();
     
-    if ($listing) {
-        sendJSON(['success' => true, 'listing' => $listing]);
+    if ($accessory) {
+        sendJSON(['success' => true, 'accessory' => $accessory]);
     } else {
-        sendJSON(['success' => false, 'message' => 'Listing not found'], 404);
+        sendJSON(['success' => false, 'message' => 'Item not found'], 404);
     }
 }
 
 /**
- * Create new listing (Admin only)
+ * Create new accessory (Admin only)
  */
-function createListing($db) {
+function createAccessory($db) {
     requireAdmin();
     
     // Get POST data
@@ -111,19 +111,18 @@ function createListing($db) {
     }
     
     // Sanitize and validate input
-    $title = sanitizeInput($data['title'] ?? '');
+    $item_name = sanitizeInput($data['item_name'] ?? '');
     $description = sanitizeInput($data['description'] ?? '');
     $category = sanitizeInput($data['category'] ?? '');
-    $price = floatval($data['price'] ?? 0);
-    $condition_type = sanitizeInput($data['condition_type'] ?? 'used');
+    $original_price = floatval($data['original_price'] ?? 0);
     $image = sanitizeInput($data['image'] ?? '');
     
     // Validation
-    if (empty($title) || strlen($title) < 3) {
-        sendJSON(['success' => false, 'message' => 'Title must be at least 3 characters'], 400);
+    if (empty($item_name) || strlen($item_name) < 3) {
+        sendJSON(['success' => false, 'message' => 'Item name must be at least 3 characters'], 400);
     }
     
-    if ($price <= 0) {
+    if ($original_price <= 0) {
         sendJSON(['success' => false, 'message' => 'Price must be greater than 0'], 400);
     }
     
@@ -131,41 +130,40 @@ function createListing($db) {
         sendJSON(['success' => false, 'message' => 'Invalid category'], 400);
     }
     
-    if (!in_array($condition_type, ['new', 'used'])) {
-        sendJSON(['success' => false, 'message' => 'Invalid condition type'], 400);
-    }
-    
-    // Insert listing
+    // Insert accessory
     try {
         $stmt = $db->prepare("
-            INSERT INTO listings (user_id, title, description, category, price, condition_type, image, status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+            INSERT INTO accessories (posted_by, item_name, description, category, original_price, image, status) 
+            VALUES (?, ?, ?, ?, ?, ?, 'available')
         ");
-        $stmt->execute([$_SESSION['user_id'], $title, $description, $category, $price, $condition_type, $image]);
+        $stmt->execute([$_SESSION['user_id'], $item_name, $description, $category, $original_price, $image]);
         
-        $listingId = $db->lastInsertId();
+        $itemId = $db->lastInsertId();
         
-        // Get created listing
-        $stmt = $db->prepare("SELECT * FROM listings WHERE id = ?");
-        $stmt->execute([$listingId]);
-        $listing = $stmt->fetch();
+        // Get created accessory
+        $stmt = $db->prepare("SELECT * FROM accessories WHERE item_id = ?");
+        $stmt->execute([$itemId]);
+        $accessory = $stmt->fetch();
+        
+        // Log audit trail
+        logAudit('item_added', "Admin added item: {$item_name} (K{$original_price})", 'accessories', $itemId);
         
         sendJSON([
             'success' => true,
-            'message' => 'Listing created successfully',
-            'listing' => $listing
+            'message' => 'Item created successfully',
+            'accessory' => $accessory
         ]);
         
     } catch(PDOException $e) {
-        error_log("Create Listing Error: " . $e->getMessage());
-        sendJSON(['success' => false, 'message' => 'Failed to create listing'], 500);
+        error_log("Create Accessory Error: " . $e->getMessage());
+        sendJSON(['success' => false, 'message' => 'Failed to create item'], 500);
     }
 }
 
 /**
- * Update listing (Admin only)
+ * Update accessory (Admin only)
  */
-function updateListing($db) {
+function updateAccessory($db) {
     requireAdmin();
     
     // Get POST data
@@ -177,40 +175,39 @@ function updateListing($db) {
     }
     
     $id = intval($data['id'] ?? 0);
-    $title = sanitizeInput($data['title'] ?? '');
+    $item_name = sanitizeInput($data['item_name'] ?? '');
     $description = sanitizeInput($data['description'] ?? '');
     $category = sanitizeInput($data['category'] ?? '');
-    $price = floatval($data['price'] ?? 0);
-    $condition_type = sanitizeInput($data['condition_type'] ?? 'used');
-    $status = sanitizeInput($data['status'] ?? 'active');
+    $original_price = floatval($data['original_price'] ?? 0);
+    $status = sanitizeInput($data['status'] ?? 'available');
     $image = sanitizeInput($data['image'] ?? '');
     
     // Validation
     if ($id <= 0) {
-        sendJSON(['success' => false, 'message' => 'Invalid listing ID'], 400);
+        sendJSON(['success' => false, 'message' => 'Invalid item ID'], 400);
     }
     
-    if (empty($title) || strlen($title) < 3) {
-        sendJSON(['success' => false, 'message' => 'Title must be at least 3 characters'], 400);
+    if (empty($item_name) || strlen($item_name) < 3) {
+        sendJSON(['success' => false, 'message' => 'Item name must be at least 3 characters'], 400);
     }
     
-    if ($price <= 0) {
+    if ($original_price <= 0) {
         sendJSON(['success' => false, 'message' => 'Price must be greater than 0'], 400);
     }
     
-    if (!in_array($status, ['active', 'sold', 'inactive'])) {
+    if (!in_array($status, ['available', 'sold'])) {
         sendJSON(['success' => false, 'message' => 'Invalid status'], 400);
     }
     
-    // Update listing
+    // Update accessory
     try {
         $stmt = $db->prepare("
-            UPDATE listings 
-            SET title = ?, description = ?, category = ?, price = ?, 
-                condition_type = ?, status = ?, image = ?, updated_at = NOW()
-            WHERE id = ?
+            UPDATE accessories 
+            SET item_name = ?, description = ?, category = ?, original_price = ?, 
+                status = ?, image = ?
+            WHERE item_id = ?
         ");
-        $stmt->execute([$title, $description, $category, $price, $condition_type, $status, $image, $id]);
+        $stmt->execute([$item_name, $description, $category, $original_price, $status, $image, $id]);
         
         // If marked as sold, update related purchase requests
         if ($status === 'sold') {
@@ -218,38 +215,41 @@ function updateListing($db) {
             $db->prepare("
                 UPDATE purchase_requests 
                 SET status = 'completed' 
-                WHERE listing_id = ? AND status = 'accepted'
+                WHERE item_id = ? AND status = 'accepted'
             ")->execute([$id]);
             
             // Cancel other pending requests
             $db->prepare("
                 UPDATE purchase_requests 
                 SET status = 'cancelled' 
-                WHERE listing_id = ? AND status IN ('pending', 'negotiating')
+                WHERE item_id = ? AND status IN ('pending', 'negotiating')
             ")->execute([$id]);
         }
         
-        // Get updated listing
-        $stmt = $db->prepare("SELECT * FROM listings WHERE id = ?");
+        // Get updated accessory
+        $stmt = $db->prepare("SELECT * FROM accessories WHERE item_id = ?");
         $stmt->execute([$id]);
-        $listing = $stmt->fetch();
+        $accessory = $stmt->fetch();
+        
+        // Log audit trail
+        logAudit('item_updated', "Admin updated item: {$item_name} (Status: {$status})", 'accessories', $id);
         
         sendJSON([
             'success' => true,
-            'message' => 'Listing updated successfully',
-            'listing' => $listing
+            'message' => 'Item updated successfully',
+            'accessory' => $accessory
         ]);
         
     } catch(PDOException $e) {
-        error_log("Update Listing Error: " . $e->getMessage());
-        sendJSON(['success' => false, 'message' => 'Failed to update listing'], 500);
+        error_log("Update Accessory Error: " . $e->getMessage());
+        sendJSON(['success' => false, 'message' => 'Failed to update item'], 500);
     }
 }
 
 /**
- * Delete listing (Admin only)
+ * Delete accessory (Admin only)
  */
-function deleteListing($db) {
+function deleteAccessory($db) {
     requireAdmin();
     
     // Get POST data
@@ -263,15 +263,15 @@ function deleteListing($db) {
     $id = intval($data['id'] ?? 0);
     
     if ($id <= 0) {
-        sendJSON(['success' => false, 'message' => 'Invalid listing ID'], 400);
+        sendJSON(['success' => false, 'message' => 'Invalid item ID'], 400);
     }
     
     try {
-        // Check if listing has active purchase requests
+        // Check if item has active purchase requests
         $stmt = $db->prepare("
             SELECT COUNT(*) as count 
             FROM purchase_requests 
-            WHERE listing_id = ? AND status IN ('pending', 'negotiating', 'accepted')
+            WHERE item_id = ? AND status IN ('pending', 'negotiating', 'accepted')
         ");
         $stmt->execute([$id]);
         $result = $stmt->fetch();
@@ -281,22 +281,25 @@ function deleteListing($db) {
             $db->prepare("
                 UPDATE purchase_requests 
                 SET status = 'cancelled' 
-                WHERE listing_id = ?
+                WHERE item_id = ?
             ")->execute([$id]);
         }
         
-        // Delete listing
-        $stmt = $db->prepare("DELETE FROM listings WHERE id = ?");
+        // Delete accessory
+        $stmt = $db->prepare("DELETE FROM accessories WHERE item_id = ?");
         $stmt->execute([$id]);
+        
+        // Log audit trail
+        logAudit('item_deleted', "Admin deleted item ID: {$id}", 'accessories', $id);
         
         sendJSON([
             'success' => true,
-            'message' => 'Listing deleted successfully'
+            'message' => 'Item deleted successfully'
         ]);
         
     } catch(PDOException $e) {
-        error_log("Delete Listing Error: " . $e->getMessage());
-        sendJSON(['success' => false, 'message' => 'Failed to delete listing'], 500);
+        error_log("Delete Accessory Error: " . $e->getMessage());
+        sendJSON(['success' => false, 'message' => 'Failed to delete item'], 500);
     }
 }
 
@@ -304,10 +307,10 @@ function deleteListing($db) {
 if ($method === 'GET') {
     switch ($action) {
         case 'list':
-            getListings($db);
+            getAccessories($db);
             break;
         case 'get':
-            getListing($db);
+            getAccessory($db);
             break;
         default:
             sendJSON(['success' => false, 'message' => 'Invalid action'], 400);
@@ -315,13 +318,13 @@ if ($method === 'GET') {
 } elseif ($method === 'POST') {
     switch ($action) {
         case 'create':
-            createListing($db);
+            createAccessory($db);
             break;
         case 'update':
-            updateListing($db);
+            updateAccessory($db);
             break;
         case 'delete':
-            deleteListing($db);
+            deleteAccessory($db);
             break;
         default:
             sendJSON(['success' => false, 'message' => 'Invalid action'], 400);

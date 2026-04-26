@@ -30,9 +30,15 @@ define('ALLOWED_ORIGINS', ['http://localhost', 'https://billie0j.github.io']);
 // Error reporting (disable in production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/../logs/php_errors.log');
 
 // Timezone
 date_default_timezone_set('Africa/Harare');
+
+// Account lockout settings
+define('ACCOUNT_LOCKOUT_DURATION', 1800); // 30 minutes
+define('ACCOUNT_LOCKOUT_THRESHOLD', 5); // Lock after 5 failed attempts
 
 /**
  * Database Connection Class
@@ -147,6 +153,105 @@ function startSecureSession() {
         ini_set('session.cookie_samesite', 'Strict');
         session_start();
     }
+}
+
+/**
+ * Regenerate session ID for security
+ * Call this after login or privilege escalation
+ */
+function regenerateSession() {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_regenerate_id(true);
+    }
+}
+
+/**
+ * Check if account is locked
+ * 
+ * @param string $email - Email to check
+ * @return bool - True if locked, false otherwise
+ */
+function isAccountLocked($email) {
+    try {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("
+            SELECT locked_until 
+            FROM account_lockouts 
+            WHERE email = ? AND locked_until > NOW()
+        ");
+        $stmt->execute([$email]);
+        return $stmt->fetch() !== false;
+    } catch(PDOException $e) {
+        error_log("Account Lock Check Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Lock account after too many failed attempts
+ * 
+ * @param string $email - Email to lock
+ */
+function lockAccount($email) {
+    try {
+        $db = Database::getInstance()->getConnection();
+        $lockUntil = date('Y-m-d H:i:s', time() + ACCOUNT_LOCKOUT_DURATION);
+        
+        $stmt = $db->prepare("
+            INSERT INTO account_lockouts (email, locked_until) 
+            VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE locked_until = ?, created_at = NOW()
+        ");
+        $stmt->execute([$email, $lockUntil, $lockUntil]);
+        
+        // Log audit trail
+        logAudit('account_locked', "Account locked due to too many failed login attempts: {$email}", 'account_lockouts', null);
+    } catch(PDOException $e) {
+        error_log("Account Lock Error: " . $e->getMessage());
+    }
+}
+
+/**
+ * Get remaining lockout time in minutes
+ * 
+ * @param string $email - Email to check
+ * @return int - Minutes remaining, 0 if not locked
+ */
+function getLockoutTimeRemaining($email) {
+    try {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("
+            SELECT TIMESTAMPDIFF(MINUTE, NOW(), locked_until) as minutes_remaining
+            FROM account_lockouts 
+            WHERE email = ? AND locked_until > NOW()
+        ");
+        $stmt->execute([$email]);
+        $result = $stmt->fetch();
+        return $result ? max(0, $result['minutes_remaining']) : 0;
+    } catch(PDOException $e) {
+        error_log("Lockout Time Check Error: " . $e->getMessage());
+        return 0;
+    }
+}
+
+/**
+ * Handle database errors gracefully
+ * Logs the error and returns user-friendly message
+ * 
+ * @param PDOException $e - The exception
+ * @param string $context - Context of the error
+ * @return array - Error response
+ */
+function handleDatabaseError($e, $context = 'operation') {
+    // Log detailed error for debugging
+    error_log("Database Error in {$context}: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
+    
+    // Return generic message to user
+    return [
+        'success' => false,
+        'message' => 'Something went wrong. Please try again later.'
+    ];
 }
 
 /**

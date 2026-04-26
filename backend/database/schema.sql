@@ -28,10 +28,11 @@ CREATE TABLE IF NOT EXISTS accessories (
     status ENUM('available', 'sold') DEFAULT 'available',
     posted_by INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (posted_by) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (posted_by) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX idx_posted_by (posted_by),
     INDEX idx_category (category),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    CONSTRAINT chk_price CHECK (original_price > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Purchase requests table (stores student buying and negotiation requests)
@@ -44,11 +45,13 @@ CREATE TABLE IF NOT EXISTS purchase_requests (
     message TEXT NULL,
     status ENUM('pending', 'accepted', 'denied', 'negotiating', 'cancelled', 'completed') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (item_id) REFERENCES accessories(item_id) ON DELETE CASCADE,
-    FOREIGN KEY (student_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES accessories(item_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX idx_item_id (item_id),
     INDEX idx_student_id (student_id),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    CONSTRAINT chk_offered_price CHECK (offered_price IS NULL OR offered_price > 0),
+    CONSTRAINT chk_original_price CHECK (original_price > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Sessions table (for CSRF tokens and session management)
@@ -75,6 +78,17 @@ CREATE TABLE IF NOT EXISTS login_attempts (
     INDEX idx_email (email),
     INDEX idx_ip_address (ip_address),
     INDEX idx_attempted_at (attempted_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Account lockouts table (tracks locked accounts)
+CREATE TABLE IF NOT EXISTS account_lockouts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    locked_until TIMESTAMP NOT NULL,
+    lock_reason VARCHAR(255) DEFAULT 'Too many failed login attempts',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_email (email),
+    INDEX idx_locked_until (locked_until)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Audit logs table (tracks all important actions)

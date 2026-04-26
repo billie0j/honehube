@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Item Details — Honehube</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
   <style>
     .detail-page {
       max-width: 1200px;
@@ -200,9 +200,9 @@
   <div id="detail-content"><p class="loading-msg">Loading item details...</p></div>
 </div>
 
-<script src="js/store.js"></script>
-<script src="js/api.js"></script>
-<script src="js/navbar.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/navbar.js"></script>
 <script>
   const listingId = new URLSearchParams(location.search).get('id');
   if (!listingId) location.href = 'index.html';

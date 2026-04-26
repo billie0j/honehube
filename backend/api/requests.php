@@ -4,7 +4,7 @@
  * Handles purchase requests and negotiations
  */
 
-require_once 'config.php';
+require_once '../config/config.php';
 
 // Start session and set CORS headers
 startSecureSession();
