@@ -116,12 +116,14 @@ INSERT INTO users (full_name, email, password, role) VALUES
 ON DUPLICATE KEY UPDATE email=email;
 
 -- Insert sample accessories
-INSERT INTO accessories (item_name, category, description, original_price, status, posted_by) VALUES
-('Dell Latitude E7450', 'Laptops', 'Intel Core i5, 8GB RAM, 256GB SSD, 14" display', 450.00, 'available', 1),
-('Kingston 16GB DDR4 RAM', 'RAM', 'Brand new 16GB DDR4 2666MHz memory module', 75.00, 'available', 1),
-('Samsung 500GB SSD', 'Storage', 'High-speed SATA SSD, barely used', 60.00, 'available', 1),
-('HP Laptop Charger 65W', 'Chargers', 'Compatible with HP laptops, original charger', 25.00, 'available', 1),
-('Lenovo ThinkPad T480', 'Laptops', 'Intel Core i7, 16GB RAM, 512GB SSD, excellent condition', 650.00, 'available', 1)
+INSERT INTO accessories (item_name, category, description, original_price, image, status, posted_by) VALUES
+('Dell Latitude E7450', 'Laptops', 'Intel Core i5, 8GB RAM, 256GB SSD, 14" display', 4500.00, NULL, 'available', 1),
+('Kingston 16GB DDR4 RAM', 'RAM', 'Brand new 16GB DDR4 2666MHz memory module', 750.00, NULL, 'available', 1),
+('Samsung 500GB SSD', 'Storage', 'High-speed SATA SSD, barely used', 600.00, NULL, 'available', 1),
+('HP Laptop Charger 65W', 'Chargers', 'Compatible with HP laptops, original charger', 250.00, NULL, 'available', 1),
+('Lenovo ThinkPad T480', 'Laptops', 'Intel Core i7, 16GB RAM, 512GB SSD, excellent condition', 6500.00, NULL, 'available', 1),
+('iPhone 15', 'Phones', 'Brand new Apple iPhone 15, 128GB, Blue color, A16 Bionic chip, 6.1" Super Retina XDR display, Dual camera system', 12500.00, '../assets/images/iphone 15.webp', 'available', 1),
+('Samsung Galaxy A07', 'Phones', 'Samsung Galaxy A07, 64GB storage, 4GB RAM, excellent condition', 1800.00, '../assets/images/samsung A07.jpg', 'available', 1)
 ON DUPLICATE KEY UPDATE item_id=item_id;
 
 -- Insert default admin user
@@ -179,10 +181,12 @@ CREATE TABLE IF NOT EXISTS notifications (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert sample listings
-INSERT INTO listings (user_id, title, description, category, price, condition_type, status) VALUES
-(1, 'Dell Latitude E7450', 'Intel Core i5, 8GB RAM, 256GB SSD, 14" display', 'Laptops', 450.00, 'used', 'active'),
-(1, 'Kingston 16GB DDR4 RAM', 'Brand new 16GB DDR4 2666MHz memory module', 'RAM', 75.00, 'new', 'active'),
-(1, 'Samsung 500GB SSD', 'High-speed SATA SSD, barely used', 'Storage', 60.00, 'used', 'active'),
-(1, 'HP Laptop Charger 65W', 'Compatible with HP laptops, original charger', 'Chargers', 25.00, 'new', 'active'),
-(1, 'Lenovo ThinkPad T480', 'Intel Core i7, 16GB RAM, 512GB SSD, excellent condition', 'Laptops', 650.00, 'used', 'active')
+INSERT INTO listings (user_id, title, description, category, price, image, condition_type, status) VALUES
+(1, 'Dell Latitude E7450', 'Intel Core i5, 8GB RAM, 256GB SSD, 14" display', 'Laptops', 4500.00, NULL, 'used', 'active'),
+(1, 'Kingston 16GB DDR4 RAM', 'Brand new 16GB DDR4 2666MHz memory module', 'RAM', 750.00, NULL, 'new', 'active'),
+(1, 'Samsung 500GB SSD', 'High-speed SATA SSD, barely used', 'Storage', 600.00, NULL, 'used', 'active'),
+(1, 'HP Laptop Charger 65W', 'Compatible with HP laptops, original charger', 'Chargers', 250.00, NULL, 'new', 'active'),
+(1, 'Lenovo ThinkPad T480', 'Intel Core i7, 16GB RAM, 512GB SSD, excellent condition', 'Laptops', 6500.00, NULL, 'used', 'active'),
+(1, 'iPhone 15', 'Brand new Apple iPhone 15, 128GB, Blue color, A16 Bionic chip, 6.1" Super Retina XDR display, Dual camera system', 'Phones', 12500.00, '../assets/images/iphone 15.webp', 'new', 'active'),
+(1, 'Samsung Galaxy A07', 'Samsung Galaxy A07, 64GB storage, 4GB RAM, excellent condition', 'Phones', 1800.00, '../assets/images/samsung A07.jpg', 'used', 'active')
 ON DUPLICATE KEY UPDATE id=id;
