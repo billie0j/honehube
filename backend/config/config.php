@@ -17,7 +17,7 @@ define('HASH_ALGO', PASSWORD_BCRYPT);
 define('HASH_COST', 10);
 
 // Session settings
-define('SESSION_LIFETIME', 3600); // 1 hour
+define('SESSION_LIFETIME', 600); // 10 minutes (600 seconds)
 define('REMEMBER_ME_LIFETIME', 2592000); // 30 days
 
 // Rate limiting
