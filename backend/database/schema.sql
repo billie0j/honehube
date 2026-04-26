@@ -123,7 +123,8 @@ INSERT INTO accessories (item_name, category, description, original_price, image
 ('HP Laptop Charger 65W', 'Chargers', 'Compatible with HP laptops, original charger', 250.00, NULL, 'available', 1),
 ('Lenovo ThinkPad T480', 'Laptops', 'Intel Core i7, 16GB RAM, 512GB SSD, excellent condition', 6500.00, NULL, 'available', 1),
 ('iPhone 15', 'Phones', 'Brand new Apple iPhone 15, 128GB, Blue color, A16 Bionic chip, 6.1" Super Retina XDR display, Dual camera system', 12500.00, '../assets/images/iphone 15.webp', 'available', 1),
-('Samsung Galaxy A07', 'Phones', 'Samsung Galaxy A07, 64GB storage, 4GB RAM, excellent condition', 1800.00, '../assets/images/samsung A07.jpg', 'available', 1)
+('Samsung Galaxy A07', 'Phones', 'Samsung Galaxy A07, 64GB storage, 4GB RAM, excellent condition', 1800.00, '../assets/images/samsung A07.jpg', 'available', 1),
+('Phone Stand', 'Accessories', 'Adjustable aluminum phone stand, compatible with all smartphones, sturdy and portable design, perfect for desk or bedside use', 150.00, '../assets/images/stand.png', 'available', 1)
 ON DUPLICATE KEY UPDATE item_id=item_id;
 
 -- Insert default admin user
@@ -188,5 +189,6 @@ INSERT INTO listings (user_id, title, description, category, price, image, condi
 (1, 'HP Laptop Charger 65W', 'Compatible with HP laptops, original charger', 'Chargers', 250.00, NULL, 'new', 'active'),
 (1, 'Lenovo ThinkPad T480', 'Intel Core i7, 16GB RAM, 512GB SSD, excellent condition', 'Laptops', 6500.00, NULL, 'used', 'active'),
 (1, 'iPhone 15', 'Brand new Apple iPhone 15, 128GB, Blue color, A16 Bionic chip, 6.1" Super Retina XDR display, Dual camera system', 'Phones', 12500.00, '../assets/images/iphone 15.webp', 'new', 'active'),
-(1, 'Samsung Galaxy A07', 'Samsung Galaxy A07, 64GB storage, 4GB RAM, excellent condition', 'Phones', 1800.00, '../assets/images/samsung A07.jpg', 'used', 'active')
+(1, 'Samsung Galaxy A07', 'Samsung Galaxy A07, 64GB storage, 4GB RAM, excellent condition', 'Phones', 1800.00, '../assets/images/samsung A07.jpg', 'used', 'active'),
+(1, 'Phone Stand', 'Adjustable aluminum phone stand, compatible with all smartphones, sturdy and portable design, perfect for desk or bedside use', 'Accessories', 150.00, '../assets/images/stand.png', 'new', 'active')
 ON DUPLICATE KEY UPDATE id=id;
