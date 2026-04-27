@@ -5,188 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Item Details — Honehube</title>
   <link rel="stylesheet" href="../assets/css/style.css" />
-  <style>
-    .detail-page {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      background: #f0f0f0;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-bottom: 20px;
-      transition: background 0.3s;
-    }
-    .back-btn:hover {
-      background: #e0e0e0;
-    }
-    .detail-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .detail-img {
-      width: 100%;
-      height: 400px;
-      background: #f8f9fa;
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .detail-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .detail-img-placeholder {
-      font-size: 120px;
-      opacity: 0.3;
-    }
-    .detail-info h1 {
-      margin: 10px 0;
-      font-size: 32px;
-      color: #333;
-    }
-    .detail-price {
-      font-size: 36px;
-      font-weight: bold;
-      color: #667eea;
-      margin: 15px 0;
-    }
-    .detail-category {
-      color: #666;
-      margin-bottom: 20px;
-    }
-    .detail-desc {
-      line-height: 1.6;
-      color: #555;
-      margin-bottom: 20px;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 8px;
-    }
-    .seller-box {
-      padding: 15px;
-      background: #f0f0f0;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-    .purchase-request-box {
-      background: #f8f9fa;
-      padding: 25px;
-      border-radius: 12px;
-      margin-top: 20px;
-      border: 2px solid #667eea;
-    }
-    .purchase-request-box h3 {
-      margin-top: 0;
-      color: #333;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: #333;
-    }
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-    .form-group small {
-      display: block;
-      margin-top: 5px;
-      color: #666;
-      font-size: 12px;
-    }
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 15px;
-    }
-    .checkbox-group input[type="checkbox"] {
-      width: auto;
-    }
-    .alert {
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 15px;
-    }
-    .alert-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    .alert-error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    .alert-info {
-      background: #d1ecf1;
-      color: #0c5460;
-      border: 1px solid #bee5eb;
-    }
-    .price-comparison {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px;
-      background: white;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-    .price-item {
-      text-align: center;
-    }
-    .price-item-label {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 5px;
-    }
-    .price-item-value {
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
-    }
-    .savings {
-      color: #28a745;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-    @media (max-width: 768px) {
-      .detail-container {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-      .detail-img {
-        height: 300px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="../assets/css/listing-detail.css" />
 </head>
 <body>
 
@@ -314,6 +133,16 @@
                 📧 Send Purchase Request
               </button>
             </div>
+
+            <div class="purchase-request-box" style="margin-top: 20px; border-color: #dc3545;">
+              <h3>⚠️ Report an Issue</h3>
+              <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+                If you've purchased this item and encountered a problem, you can report it here.
+              </p>
+              <button class="btn btn-secondary" onclick="showComplaintModal()" style="width: 100%; background: #dc3545; color: white;">
+                📋 Report Issue with This Item
+              </button>
+            </div>
           ` : ''}
         </div>
       </div>
@@ -411,8 +240,132 @@
     }
   }
 
-  // Make function globally available
+  // Show complaint modal
+  function showComplaintModal() {
+    const modal = document.createElement('div');
+    modal.id = 'complaint-modal';
+    modal.innerHTML = `
+      <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+          <h2 style="margin-top: 0;">📋 Report Issue with Item</h2>
+          <p style="color: #666; margin-bottom: 20px;">
+            Please describe the issue you're experiencing with this item. The admin will review your complaint and respond accordingly.
+          </p>
+          
+          <div id="complaint-alert"></div>
+          
+          <form id="complaint-form">
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Issue Type *</label>
+              <select id="complaint-type" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                <option value="">Select issue type</option>
+                <option value="malfunction">Malfunction - Item not working properly</option>
+                <option value="defect">Defect - Manufacturing or quality issue</option>
+                <option value="not_as_described">Not as Described - Item differs from listing</option>
+                <option value="damaged">Damaged - Item arrived damaged</option>
+                <option value="other">Other - Different issue</option>
+              </select>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Subject *</label>
+              <input type="text" id="complaint-subject" required minlength="5" maxlength="200" placeholder="Brief description of the issue" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+              <small style="display: block; margin-top: 5px; color: #666;">Minimum 5 characters</small>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Detailed Description *</label>
+              <textarea id="complaint-description" required minlength="10" rows="5" placeholder="Please provide detailed information about the issue..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; resize: vertical;"></textarea>
+              <small style="display: block; margin-top: 5px; color: #666;">Minimum 10 characters. Include as much detail as possible.</small>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+              <button type="submit" class="btn btn-primary" style="flex: 1; background: #dc3545;">Submit Complaint</button>
+              <button type="button" class="btn btn-secondary" onclick="closeComplaintModal()" style="flex: 1;">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('complaint-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await submitComplaint();
+    });
+  }
+
+  // Submit complaint
+  async function submitComplaint() {
+    const alertEl = document.getElementById('complaint-alert');
+    const complaintType = document.getElementById('complaint-type').value;
+    const subject = document.getElementById('complaint-subject').value.trim();
+    const description = document.getElementById('complaint-description').value.trim();
+
+    // Validation
+    if (!complaintType) {
+      alertEl.innerHTML = '<div class="alert alert-error">Please select an issue type.</div>';
+      return;
+    }
+
+    if (subject.length < 5) {
+      alertEl.innerHTML = '<div class="alert alert-error">Subject must be at least 5 characters.</div>';
+      return;
+    }
+
+    if (description.length < 10) {
+      alertEl.innerHTML = '<div class="alert alert-error">Description must be at least 10 characters.</div>';
+      return;
+    }
+
+    // Prepare complaint data
+    const complaintData = {
+      item_id: listingId,
+      complaint_type: complaintType,
+      subject: subject,
+      description: description
+    };
+
+    // Send complaint
+    alertEl.innerHTML = '<div class="alert alert-info">Submitting complaint...</div>';
+
+    const result = await API.submitComplaint(complaintData);
+
+    if (result.success) {
+      alertEl.innerHTML = `
+        <div class="alert alert-success">
+          <strong>✅ Complaint submitted successfully!</strong><br>
+          Your complaint has been received. The admin will review it and respond soon.
+          You can track the status in your <a href="dashboard.html" style="color: #155724; text-decoration: underline;">dashboard</a>.
+        </div>
+      `;
+      
+      // Clear form
+      document.getElementById('complaint-type').value = '';
+      document.getElementById('complaint-subject').value = '';
+      document.getElementById('complaint-description').value = '';
+      
+      // Close modal after 3 seconds
+      setTimeout(() => {
+        closeComplaintModal();
+      }, 3000);
+    } else {
+      alertEl.innerHTML = `<div class="alert alert-error"><strong>Error:</strong> ${result.message || 'Failed to submit complaint. Please try again.'}</div>`;
+    }
+  }
+
+  // Close complaint modal
+  function closeComplaintModal() {
+    const modal = document.getElementById('complaint-modal');
+    if (modal) {
+      modal.remove();
+    }
+  }
+
+  // Make functions globally available
   window.sendPurchaseRequest = sendPurchaseRequest;
+  window.showComplaintModal = showComplaintModal;
+  window.closeComplaintModal = closeComplaintModal;
 
   // Initialize
   init();

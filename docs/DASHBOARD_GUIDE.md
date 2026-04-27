@@ -1,384 +1,353 @@
-# Dashboard Guide
+# Dashboard Guide - Admin vs Student 📊
 
-## Overview
-Honehube now includes two comprehensive dashboards for different user roles.
-
----
-
-## 🎯 User Dashboard (`dashboard.html`)
-
-### Access
-- **URL:** `http://localhost/honehube/dashboard.html`
-- **Who:** Regular users (buyers/sellers)
-- **Login Required:** Yes
-
-### Features
-
-#### 📊 Statistics Overview
-- **My Listings** - Total number of your listings
-- **Active** - Currently active listings
-- **Sold** - Successfully sold items
-- **Inquiries** - Messages from buyers
-
-#### 📦 My Listings Management
-- **View All Listings** - See all your posted items
-- **Filter by Status:**
-  - All listings
-  - Active listings
-  - Sold items
-  - Inactive listings
-- **Actions:**
-  - View listing details
-  - Edit listing
-  - Delete listing
-
-#### 👤 Profile Section
-- **View Profile Information:**
-  - Full name
-  - Email address
-  - Student ID
-  - Account role
-  - Member since date
-  - Last login time
-- **Profile Actions:**
-  - Edit profile
-  - Change password
-
-#### ➕ Quick Actions
-- Browse marketplace
-- Create new listing
-- View all listings by status
+**Quick Reference:** Understanding the Two Separate Dashboards
 
 ---
 
-## 👨‍💼 Admin Dashboard (`admin-dashboard.html`)
+## 🎯 Quick Answer
 
-### Access
-- **URL:** `http://localhost/honehube/admin-dashboard.html`
-- **Who:** Admin users only
-- **Login Required:** Yes (admin role)
-- **Default Admin:**
-  - Email: `admin@honehube.com`
-  - Password: `Admin@123`
+**YES, the dashboards are already separate!**
 
-### Features
-
-#### 📊 System Statistics
-- **Total Users** - All registered users
-- **Active Listings** - Currently active products
-- **Total Value** - Sum of all listing prices
-- **Inquiries** - Total buyer inquiries
-
-#### 👥 User Management
-- **View All Users:**
-  - User ID
-  - Full name
-  - Email address
-  - Student ID
-  - Role (admin/user)
-  - Join date
-  - Account status
-- **Actions:**
-  - View user details
-  - Edit user information
-  - Delete user (except admins)
-- **Export:** Download user data
-
-#### 📦 Listings Management
-- **View All Listings:**
-  - Listing ID
-  - Title
-  - Category
-  - Price
-  - Condition (new/used)
-  - Seller name
-  - Status (active/sold/inactive)
-- **Actions:**
-  - View listing details
-  - Edit listing
-  - Delete listing
-- **Export:** Download listings data
-
-#### 📧 Inquiries Management
-- **View All Inquiries:**
-  - Inquiry ID
-  - Listing title
-  - Buyer name
-  - Seller name
-  - Message content
-  - Status (pending/replied/closed)
-  - Date sent
-- **Actions:**
-  - View inquiry details
-  - Mark as replied/closed
-
-#### ⚡ Quick Actions
-- Manage users
-- Manage listings
-- View inquiries
-- Generate reports
+- **Admin Dashboard:** `admin-dashboard.html` (Management interface)
+- **Student Dashboard:** `dashboard.html` (Buyer interface)
 
 ---
 
-## 🎨 Dashboard Features
+## 🔐 How Access Works
 
-### Common Features (Both Dashboards)
+### When You Login:
 
-#### Navigation
-- **Home** - Return to marketplace
-- **Listings** - Browse all products
-- **Dashboard** - Current page
-- **Logout** - Sign out
-
-#### Responsive Design
-- Mobile-friendly layout
-- Adaptive grid system
-- Touch-friendly buttons
-
-#### Real-time Updates
-- Statistics update automatically
-- Listings refresh on actions
-- Instant feedback on operations
-
----
-
-## 🚀 How to Use
-
-### For Regular Users
-
-1. **Login to Your Account**
-   ```
-   http://localhost/honehube/login.html
-   ```
-
-2. **Access Dashboard**
-   - Click "📊 My Dashboard" in navigation
-   - Or visit: `http://localhost/honehube/dashboard.html`
-
-3. **View Your Statistics**
-   - See total listings count
-   - Check active/sold items
-   - Monitor inquiries
-
-4. **Manage Listings**
-   - Click on tabs to filter (All/Active/Sold/Inactive)
-   - Use action buttons to View/Edit/Delete
-   - Create new listings with "➕ New Listing"
-
-5. **Update Profile**
-   - Scroll to Profile section
-   - Click "✏️ Edit Profile"
-   - Change password with "🔒 Change Password"
-
-### For Admins
-
-1. **Login as Admin**
-   ```
-   Email: admin@honehube.com
-   Password: Admin@123
-   ```
-
-2. **Access Admin Dashboard**
-   - Click "📊 Admin Dashboard" in navigation
-   - Or visit: `http://localhost/honehube/admin-dashboard.html`
-
-3. **Monitor System**
-   - View total users, listings, and revenue
-   - Check system health statistics
-   - Track growth metrics
-
-4. **Manage Users**
-   - Scroll to "👥 Recent Users" section
-   - View user details
-   - Edit or delete users as needed
-   - Export user data for reports
-
-5. **Manage Listings**
-   - Scroll to "📦 Recent Listings" section
-   - Monitor all marketplace listings
-   - Edit or remove inappropriate content
-   - Export listings data
-
-6. **Handle Inquiries**
-   - Scroll to "📧 Recent Inquiries" section
-   - View buyer-seller communications
-   - Monitor inquiry status
-
----
-
-## 🔒 Security & Access Control
-
-### User Dashboard
-- ✅ Requires login
-- ✅ Users can only see their own listings
-- ✅ Users can only edit/delete their own items
-- ✅ Profile data is private
-
-### Admin Dashboard
-- ✅ Requires admin role
-- ✅ Non-admin users are redirected
-- ✅ Full access to all data
-- ✅ Can manage all users and listings
-- ✅ Cannot delete other admin accounts
-
----
-
-## 📱 Responsive Design
-
-### Desktop (1200px+)
-- Full grid layout
-- Multiple columns
-- All features visible
-
-### Tablet (768px - 1199px)
-- Adaptive grid
-- 2-column layout
-- Optimized spacing
-
-### Mobile (< 768px)
-- Single column
-- Stacked cards
-- Touch-friendly buttons
-- Simplified navigation
-
----
-
-## 🎯 Dashboard Statistics
-
-### User Dashboard Metrics
-- **My Listings** - Count of all your listings
-- **Active** - Listings currently available
-- **Sold** - Successfully sold items
-- **Inquiries** - Messages received
-
-### Admin Dashboard Metrics
-- **Total Users** - All registered accounts
-- **Active Listings** - Currently available products
-- **Total Value** - Sum of all listing prices (in Kwacha)
-- **Inquiries** - Total buyer inquiries
-
----
-
-## 🔧 Customization
-
-### Changing Dashboard Colors
-Edit the inline styles in the dashboard HTML files:
-
-```css
-/* Primary gradient */
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-/* Change to your colors */
-background: linear-gradient(135deg, #YOUR_COLOR_1 0%, #YOUR_COLOR_2 100%);
+**As Admin:**
+```
+Login → System checks role → role = 'admin' 
+→ Navbar shows "Admin Dashboard" 
+→ Click → Opens admin-dashboard.html
+→ Full management access ✅
 ```
 
-### Adding New Statistics
-1. Add new stat card in HTML
-2. Update JavaScript to calculate metric
-3. Display value in the card
+**As Student:**
+```
+Login → System checks role → role = 'student'
+→ Navbar shows "My Dashboard"
+→ Click → Opens dashboard.html
+→ Personal dashboard access ✅
+```
 
-### Customizing Tables
-- Modify column headers in `<thead>`
-- Update data display in JavaScript
-- Add/remove action buttons
-
----
-
-## 🐛 Troubleshooting
-
-### "Access Denied" Error
-**Problem:** Non-admin trying to access admin dashboard  
-**Solution:** Login with admin credentials or use user dashboard
-
-### Dashboard Not Loading
-**Problem:** JavaScript errors  
-**Solution:** Check browser console (F12) for errors
-
-### Statistics Showing Zero
-**Problem:** No data in localStorage/database  
-**Solution:** 
-- Create some listings
-- Register more users
-- Ensure database is populated
-
-### Listings Not Appearing
-**Problem:** User ID mismatch  
-**Solution:** 
-- Check if listings have correct user_id
-- Verify current user is logged in
-- Clear browser cache
+**If Student Tries Admin Dashboard:**
+```
+Student → Tries to open admin-dashboard.html
+→ System checks role → role ≠ 'admin'
+→ "Access denied" alert
+→ Redirect to home page ❌
+```
 
 ---
 
-## 📊 Future Enhancements
+## 📊 Admin Dashboard
 
-### Planned Features
-- [ ] Charts and graphs for statistics
-- [ ] Export data to CSV/Excel
-- [ ] Advanced filtering and search
-- [ ] Bulk actions (delete multiple items)
-- [ ] Email notifications
-- [ ] Activity logs
-- [ ] User analytics
-- [ ] Revenue reports
-- [ ] Messaging system
-- [ ] Image upload for listings
+**File:** `frontend/pages/admin-dashboard.html`
 
----
+### What Admins See:
 
-## 🎓 Best Practices
+```
+┌─────────────────────────────────────────┐
+│  🔧 ADMIN DASHBOARD                     │
+│  Welcome, Admin User                    │
+├─────────────────────────────────────────┤
+│  📊 STATISTICS                          │
+│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐  │
+│  │Users │ │Items │ │Value │ │Reqs  │  │
+│  │  25  │ │  24  │ │ K500 │ │  12  │  │
+│  └──────┘ └──────┘ └──────┘ └──────┘  │
+├─────────────────────────────────────────┤
+│  📑 TABS                                │
+│  [Users] [Listings] [Requests] [Complaints]
+├─────────────────────────────────────────┤
+│  👥 USER MANAGEMENT                     │
+│  ┌─────────────────────────────────┐   │
+│  │ Name    Email    Role   Actions │   │
+│  │ John    john@    Student [Edit] │   │
+│  │ Mary    mary@    Student [Edit] │   │
+│  └─────────────────────────────────┘   │
+├─────────────────────────────────────────┤
+│  📦 LISTING MANAGEMENT                  │
+│  [+ Add New Listing]                    │
+│  ┌─────────────────────────────────┐   │
+│  │ Item         Price    Actions   │   │
+│  │ iPhone X     K5,800   [Edit]    │   │
+│  │              [Delete] [Mark Sold]│   │
+│  └─────────────────────────────────┘   │
+└─────────────────────────────────────────┘
+```
 
-### For Users
-1. Keep your profile updated
-2. Respond to inquiries promptly
-3. Mark items as sold when completed
-4. Use clear titles and descriptions
-5. Set competitive prices
-
-### For Admins
-1. Monitor user activity regularly
-2. Remove inappropriate content quickly
-3. Respond to user reports
-4. Keep statistics updated
-5. Export data for backups
-6. Review inquiries for issues
-
----
-
-## 📞 Support
-
-### Need Help?
-- Check browser console for errors
-- Review `SECURITY_FEATURES.md` for security info
-- See `DATABASE_SETUP.md` for database issues
-- Read `INSTALLATION_GUIDE.md` for setup help
-
-### Common Issues
-- **Can't login:** Check credentials, clear cookies
-- **Dashboard blank:** Check if logged in
-- **Actions not working:** Refresh page, check console
-- **Data not saving:** Check database connection
-
----
-
-## 🎉 Quick Start
-
-### User Dashboard
-1. Login to your account
-2. Click "📊 My Dashboard"
-3. View your statistics
-4. Manage your listings
-5. Update your profile
-
-### Admin Dashboard
-1. Login as admin
-2. Click "📊 Admin Dashboard"
-3. Monitor system statistics
-4. Manage users and listings
-5. Review inquiries
+### Admin Features:
+- ✅ View all statistics
+- ✅ Manage users (view, edit, delete)
+- ✅ Post new listings
+- ✅ Edit/delete listings
+- ✅ Mark items as sold/available
+- ✅ View all purchase requests
+- ✅ Accept/deny requests
+- ✅ View all complaints
+- ✅ Respond to complaints
+- ✅ Update complaint status
 
 ---
 
-**Dashboard Version:** 1.0  
-**Last Updated:** 2026-04-25  
-**Compatible With:** Honehube v1.0+
+## 🛍️ Student Dashboard (Buyer Dashboard)
+
+**File:** `frontend/pages/dashboard.html`
+
+### What Students See:
+
+```
+┌─────────────────────────────────────────┐
+│  🛍️ MY DASHBOARD                        │
+│  Welcome back, John!                    │
+├─────────────────────────────────────────┤
+│  📑 TABS                                │
+│  [Browse] [My Requests] [Complaints] [Profile]
+├─────────────────────────────────────────┤
+│  🛍️ AVAILABLE LISTINGS                  │
+│  ┌──────┐ ┌──────┐ ┌──────┐           │
+│  │iPhone│ │Laptop│ │Mouse │           │
+│  │K5,800│ │K4,500│ │K150  │           │
+│  │[View]│ │[View]│ │[View]│           │
+│  └──────┘ └──────┘ └──────┘           │
+├─────────────────────────────────────────┤
+│  📝 MY PURCHASE REQUESTS                │
+│  ┌─────────────────────────────────┐   │
+│  │ Item      Status    Date        │   │
+│  │ iPhone X  Pending   Apr 26      │   │
+│  │ Laptop    Accepted  Apr 25      │   │
+│  └─────────────────────────────────┘   │
+├─────────────────────────────────────────┤
+│  📋 MY COMPLAINTS                       │
+│  ┌─────────────────────────────────┐   │
+│  │ Subject        Status           │   │
+│  │ Screen issue   Investigating    │   │
+│  └─────────────────────────────────┘   │
+└─────────────────────────────────────────┘
+```
+
+### Student Features:
+- ✅ Browse available listings
+- ✅ View item details
+- ✅ Submit purchase requests
+- ✅ View my purchase requests
+- ✅ Track request status
+- ✅ Submit complaints
+- ✅ View my complaints
+- ✅ Track complaint status
+- ✅ View my profile
+- ❌ Cannot manage users
+- ❌ Cannot post listings
+- ❌ Cannot edit/delete listings
+- ❌ Cannot see other users' requests
+
+---
+
+## 🔄 Navigation Flow
+
+### Navbar Changes Based on Role:
+
+**Admin Navbar:**
+```
+[Home] [Browse] [📊 Admin Dashboard] [Logout]
+                      ↑
+                This link appears
+```
+
+**Student Navbar:**
+```
+[Home] [Browse] [📊 My Dashboard] [Logout]
+                      ↑
+                This link appears
+```
+
+---
+
+## 🔒 Security Protection
+
+### 1. Authentication Check
+```javascript
+// Both dashboards check if user is logged in
+if (!user) {
+  alert('Please login');
+  redirect to login page
+}
+```
+
+### 2. Role Verification (Admin Dashboard Only)
+```javascript
+// Admin dashboard checks role
+if (user.role !== 'admin') {
+  alert('Access denied. Admin privileges required.');
+  redirect to home page
+}
+```
+
+### 3. Backend API Protection
+```php
+// All admin APIs check role
+if ($_SESSION['user_role'] !== 'admin') {
+  return error('Unauthorized');
+}
+```
+
+---
+
+## 📱 Access URLs
+
+### Admin Dashboard:
+```
+http://localhost/honehube/frontend/pages/admin-dashboard.html
+```
+- ✅ Accessible by: Admins only
+- ❌ Blocked for: Students, guests
+
+### Student Dashboard:
+```
+http://localhost/honehube/frontend/pages/dashboard.html
+```
+- ✅ Accessible by: All logged-in users
+- ❌ Blocked for: Guests (not logged in)
+
+---
+
+## 🎨 Visual Differences
+
+| Aspect | Admin Dashboard | Student Dashboard |
+|--------|----------------|-------------------|
+| **Title** | "Admin Dashboard" | "My Dashboard" |
+| **Header Color** | Purple gradient | Purple gradient |
+| **Stats Cards** | 4 cards (Users, Items, Revenue, Requests) | None |
+| **Main Tabs** | Users, Listings, Inquiries, Complaints | Browse, My Requests, Complaints, Profile |
+| **Action Buttons** | Edit, Delete, Approve, Deny, Mark Sold | View Details, Submit Request |
+| **User List** | ✅ Shows all users | ❌ Not visible |
+| **Listing Management** | ✅ Add/Edit/Delete | ❌ View only |
+| **All Requests** | ✅ See everyone's | ❌ See only mine |
+| **All Complaints** | ✅ See everyone's | ❌ See only mine |
+
+---
+
+## 🧪 Testing the Separation
+
+### Test 1: Login as Student
+```bash
+1. Go to login page
+2. Login with student account
+3. Check navbar → Should see "My Dashboard"
+4. Click "My Dashboard" → Opens dashboard.html
+5. Try to access admin-dashboard.html directly
+   → Should show "Access denied" and redirect
+```
+
+### Test 2: Login as Admin
+```bash
+1. Go to login page
+2. Login with admin@honehube.com / Admin@123
+3. Check navbar → Should see "Admin Dashboard"
+4. Click "Admin Dashboard" → Opens admin-dashboard.html
+5. Should see all management features
+```
+
+---
+
+## 📋 Feature Checklist
+
+### Admin Dashboard Features:
+- [x] Statistics overview
+- [x] User management
+- [x] Listing management (CRUD)
+- [x] Mark as sold/available
+- [x] Purchase request management
+- [x] Complaint management
+- [x] Role-based access control
+- [x] Security protection
+
+### Student Dashboard Features:
+- [x] Browse listings
+- [x] Submit purchase requests
+- [x] View my requests
+- [x] Track request status
+- [x] Submit complaints
+- [x] View my complaints
+- [x] Profile information
+- [x] Authentication required
+
+---
+
+## 🚀 Quick Start
+
+### For Admins:
+1. Login with admin credentials
+2. Click "📊 Admin Dashboard" in navbar
+3. Manage users, listings, requests, complaints
+
+### For Students:
+1. Register or login with student account
+2. Click "📊 My Dashboard" in navbar
+3. Browse items, submit requests, track status
+
+---
+
+## ✅ Verification Checklist
+
+- [x] Two separate dashboard files exist
+- [x] Admin dashboard has role check
+- [x] Student dashboard has auth check
+- [x] Navbar shows correct link based on role
+- [x] Direct URL access is protected
+- [x] Different features for each role
+- [x] Backend APIs verify permissions
+- [x] Security alerts for unauthorized access
+
+---
+
+## 📞 Common Questions
+
+**Q: Can students access the admin dashboard?**
+A: No. If they try, they get "Access denied" and are redirected.
+
+**Q: Can admins access the student dashboard?**
+A: Yes, admins can view it, but admin features are only in admin dashboard.
+
+**Q: How does the system know which dashboard to show?**
+A: The navbar checks the user's role and displays the appropriate link.
+
+**Q: What if someone tries to access a dashboard directly via URL?**
+A: The dashboard checks authentication and role, then redirects if unauthorized.
+
+**Q: Are the dashboards really separate?**
+A: Yes! Two different HTML files with different features and access controls.
+
+---
+
+## 🎯 Summary
+
+### ✅ Dashboards ARE Separate
+
+**Admin Dashboard:**
+- File: `admin-dashboard.html`
+- Access: Admins only
+- Features: Full management
+
+**Student Dashboard:**
+- File: `dashboard.html`
+- Access: All logged-in users
+- Features: Personal dashboard
+
+**Security:** ✅ Active
+**Separation:** ✅ Complete
+**Working:** ✅ Perfectly
+
+---
+
+**Last Updated:** April 26, 2026  
+**Status:** ✅ Verified and Working  
+**Security:** 🔒 Protected
+
+---
+
+🎉 **Two Dashboards, Perfectly Separated!** 🎉

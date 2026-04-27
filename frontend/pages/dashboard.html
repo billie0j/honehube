@@ -307,6 +307,118 @@
         justify-content: center;
       }
     }
+    /* Sidebar Styles */
+    .sidebar {
+      position: fixed;
+      left: -280px;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: white;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      transition: left 0.3s ease-in-out;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    .sidebar.open {
+      left: 0;
+    }
+    .sidebar-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sidebar-menu {
+      padding: 20px 0;
+    }
+    .sidebar-item {
+      padding: 15px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #333;
+      text-decoration: none;
+      border-left: 4px solid transparent;
+    }
+    .sidebar-item:hover {
+      background: #f8f9fa;
+      border-left-color: #667eea;
+    }
+    .sidebar-item.active {
+      background: #e3f2fd;
+      border-left-color: #667eea;
+      color: #667eea;
+      font-weight: 600;
+    }
+    .sidebar-item-icon {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+    }
+    .sidebar-item-text {
+      flex: 1;
+    }
+    .sidebar-item-badge {
+      background: #dc3545;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .sidebar-toggle {
+      position: fixed;
+      top: 80px;
+      left: 20px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 999;
+      transition: all 0.3s;
+    }
+    .sidebar-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      display: none;
+    }
+    .sidebar-overlay.show {
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        left: -100%;
+        width: 80%;
+        max-width: 300px;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+    }
     .data-table {
       width: 100%;
       border-collapse: collapse;
@@ -355,6 +467,54 @@
 </head>
 <body>
 
+<!-- Sidebar Toggle Button -->
+<button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
+  ☰
+</button>
+
+<!-- Sidebar Overlay (for mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span>👨‍🎓</span>
+    <span>Student Panel</span>
+  </div>
+  <nav class="sidebar-menu">
+    <a href="#dashboard" class="sidebar-item active" onclick="navigateToSection('dashboard')">
+      <span class="sidebar-item-icon">📊</span>
+      <span class="sidebar-item-text">Dashboard</span>
+    </a>
+    <a href="#my-requests" class="sidebar-item" onclick="navigateToSection('my-requests')">
+      <span class="sidebar-item-icon">📧</span>
+      <span class="sidebar-item-text">My Requests</span>
+      <span class="sidebar-item-badge" id="sidebar-requests-count">0</span>
+    </a>
+    <a href="#my-complaints" class="sidebar-item" onclick="navigateToSection('my-complaints')">
+      <span class="sidebar-item-icon">📋</span>
+      <span class="sidebar-item-text">My Complaints</span>
+      <span class="sidebar-item-badge" id="sidebar-complaints-count">0</span>
+    </a>
+    <a href="#my-profile" class="sidebar-item" onclick="navigateToSection('my-profile')">
+      <span class="sidebar-item-icon">👤</span>
+      <span class="sidebar-item-text">My Profile</span>
+    </a>
+    <div class="sidebar-item" onclick="location.href='index.html'">
+      <span class="sidebar-item-icon">🏠</span>
+      <span class="sidebar-item-text">Browse Items</span>
+    </div>
+    <div class="sidebar-item" onclick="showCreateListing()">
+      <span class="sidebar-item-icon">➕</span>
+      <span class="sidebar-item-text">New Listing</span>
+    </div>
+    <div class="sidebar-item" onclick="location.href='login.html'">
+      <span class="sidebar-item-icon">🚪</span>
+      <span class="sidebar-item-text">Logout</span>
+    </div>
+  </nav>
+</aside>
+
 <nav class="navbar" id="navbar"></nav>
 
 <div class="dashboard-container">
@@ -391,14 +551,14 @@
     </div>
 
     <div class="stat-card">
-      <div class="stat-icon">💬</div>
-      <div class="stat-value" id="negotiating-count">0</div>
-      <div class="stat-label">Negotiating</div>
+      <div class="stat-icon">📋</div>
+      <div class="stat-value" id="my-complaints-count">0</div>
+      <div class="stat-label">My Complaints</div>
     </div>
   </div>
 
   <!-- My Listings Section -->
-  <div class="dashboard-section">
+  <div class="dashboard-section" id="my-requests">
     <div class="section-header">
       <h2>📧 My Purchase Requests</h2>
     </div>
@@ -417,6 +577,29 @@
         <h3>No purchase requests yet</h3>
         <p>Browse items and send purchase requests to get started</p>
         <button class="btn btn-primary" onclick="location.href='index.html'">Browse Items</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Complaints Section -->
+  <div class="dashboard-section" id="my-complaints">
+    <div class="section-header">
+      <h2>📋 My Complaints</h2>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="filterComplaints('all')">All</button>
+      <button class="tab" onclick="filterComplaints('pending')">Pending</button>
+      <button class="tab" onclick="filterComplaints('investigating')">Investigating</button>
+      <button class="tab" onclick="filterComplaints('resolved')">Resolved</button>
+      <button class="tab" onclick="filterComplaints('rejected')">Rejected</button>
+    </div>
+
+    <div id="my-complaints-container">
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <h3>No complaints yet</h3>
+        <p>If you experience issues with purchased items, you can report them here</p>
       </div>
     </div>
   </div>
@@ -445,7 +628,7 @@
   </div>
 
   <!-- Profile Section -->
-  <div class="dashboard-section">
+  <div class="dashboard-section" id="my-profile">
     <div class="section-header">
       <h2>👤 My Profile</h2>
       <button class="btn-small btn-primary-small" onclick="editProfile()">✏️ Edit Profile</button>
@@ -491,11 +674,14 @@
 
 <script src="../assets/js/store.js"></script>
 <script src="../assets/js/api.js"></script>
+<script src="../assets/js/hybrid-store.js"></script>
 <script src="../assets/js/navbar.js"></script>
 <script>
   let currentUser = null;
   let currentFilter = 'all';
+  let currentComplaintFilter = 'all';
   let allRequests = [];
+  let allComplaints = [];
 
   // Check authentication
   async function checkAuth() {
@@ -519,6 +705,7 @@
     loadUserInfo();
     loadStatistics();
     loadMyRequests();
+    loadMyComplaints();
     loadMyListings();
   }
 
@@ -548,13 +735,23 @@
         document.getElementById('my-requests-count').textContent = allRequests.length;
         document.getElementById('pending-requests-count').textContent = allRequests.filter(r => r.status === 'pending').length;
         document.getElementById('accepted-requests-count').textContent = allRequests.filter(r => r.status === 'accepted').length;
-        document.getElementById('negotiating-count').textContent = allRequests.filter(r => r.status === 'negotiating').length;
+        document.getElementById('sidebar-requests-count').textContent = allRequests.length;
+      }
+      
+      // Load complaints count
+      const complaintsResult = await API.getMyComplaints();
+      if (complaintsResult.success) {
+        allComplaints = complaintsResult.complaints;
+        document.getElementById('my-complaints-count').textContent = allComplaints.length;
+        document.getElementById('sidebar-complaints-count').textContent = allComplaints.length;
       }
     } else {
       document.getElementById('my-requests-count').textContent = '0';
       document.getElementById('pending-requests-count').textContent = '0';
       document.getElementById('accepted-requests-count').textContent = '0';
-      document.getElementById('negotiating-count').textContent = '0';
+      document.getElementById('my-complaints-count').textContent = '0';
+      document.getElementById('sidebar-requests-count').textContent = '0';
+      document.getElementById('sidebar-complaints-count').textContent = '0';
     }
   }
 
@@ -744,6 +941,154 @@
     }
   }
 
+  // Load my complaints
+  async function loadMyComplaints() {
+    if (HybridStore.useAPI) {
+      const result = await API.getMyComplaints();
+      if (result.success) {
+        allComplaints = result.complaints;
+        displayComplaints(allComplaints);
+      }
+    } else {
+      // No complaints in localStorage mode
+      displayComplaints([]);
+    }
+  }
+
+  // Display complaints
+  function displayComplaints(complaints) {
+    const container = document.getElementById('my-complaints-container');
+    
+    if (complaints.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <h3>No complaints yet</h3>
+          <p>${currentComplaintFilter === 'all' ? 'If you experience issues with purchased items, you can report them here' : 'No ' + currentComplaintFilter + ' complaints'}</p>
+        </div>
+      `;
+      return;
+    }
+
+    const statusColors = {
+      'pending': 'badge-warning',
+      'investigating': 'badge-info',
+      'resolved': 'badge-success',
+      'rejected': 'badge-danger'
+    };
+
+    container.innerHTML = `
+      <table class="data-table" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Issue Type</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${complaints.map(complaint => `
+            <tr>
+              <td>
+                <strong>${complaint.item_name}</strong><br>
+                <small>K${parseFloat(complaint.original_price).toFixed(2)}</small>
+              </td>
+              <td>${complaint.complaint_type.replace('_', ' ')}</td>
+              <td>${complaint.subject}</td>
+              <td><span class="badge ${statusColors[complaint.status]}">${complaint.status}</span></td>
+              <td>${new Date(complaint.created_at).toLocaleDateString()}</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn action-btn-view" onclick="viewComplaintDetails(${complaint.complaint_id})">View</button>
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  // Filter complaints
+  function filterComplaints(filter) {
+    currentComplaintFilter = filter;
+    
+    // Update active tab
+    const tabs = document.querySelectorAll('#my-complaints-container').previousElementSibling.querySelectorAll('.tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    let filtered = [...allComplaints];
+    if (filter !== 'all') {
+      filtered = filtered.filter(c => c.status === filter);
+    }
+    
+    displayComplaints(filtered);
+  }
+
+  // View complaint details
+  async function viewComplaintDetails(id) {
+    const result = await API.getComplaint(id);
+    if (!result.success) {
+      alert('Failed to load complaint details');
+      return;
+    }
+    
+    const complaint = result.complaint;
+    showComplaintDetailsModal(complaint);
+  }
+
+  // Show complaint details modal
+  function showComplaintDetailsModal(complaint) {
+    const modal = document.createElement('div');
+    modal.id = 'complaint-details-modal';
+    modal.innerHTML = `
+      <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+          <h2 style="margin-top: 0;">📋 Complaint Details</h2>
+          
+          <h3>Item Information</h3>
+          <div style="margin-bottom: 15px;">
+            <strong>Item:</strong> ${complaint.item_name}<br>
+            <strong>Price:</strong> K${parseFloat(complaint.original_price).toFixed(2)}<br>
+            ${complaint.item_description ? `<strong>Description:</strong> ${complaint.item_description}<br>` : ''}
+          </div>
+          
+          <h3>Complaint Details</h3>
+          <div style="margin-bottom: 15px;">
+            <strong>Status:</strong> <span class="badge badge-${complaint.status === 'pending' ? 'warning' : complaint.status === 'investigating' ? 'info' : complaint.status === 'resolved' ? 'success' : 'danger'}">${complaint.status}</span><br>
+            <strong>Issue Type:</strong> ${complaint.complaint_type.replace('_', ' ')}<br>
+            <strong>Subject:</strong> ${complaint.subject}<br>
+            <strong>Description:</strong><br>
+            <div style="padding: 10px; background: #f8f9fa; border-radius: 6px; margin-top: 5px;">
+              ${complaint.description}
+            </div>
+            <strong>Submitted:</strong> ${new Date(complaint.created_at).toLocaleString()}
+          </div>
+          
+          ${complaint.admin_response ? `
+            <h3>Admin Response</h3>
+            <div style="padding: 15px; background: ${complaint.status === 'resolved' ? '#d4edda' : complaint.status === 'rejected' ? '#f8d7da' : '#d1ecf1'}; border-radius: 8px; margin-bottom: 15px;">
+              ${complaint.admin_response}
+              ${complaint.resolved_at ? `<br><small style="color: #666;">Responded on: ${new Date(complaint.resolved_at).toLocaleString()}</small>` : ''}
+            </div>
+          ` : `
+            <div style="padding: 15px; background: #fff3cd; border-radius: 8px; margin-bottom: 15px;">
+              <strong>⏳ Waiting for admin response</strong><br>
+              Your complaint is ${complaint.status}. The admin will review it and respond soon.
+            </div>
+          `}
+          
+          <button type="button" class="btn btn-primary" onclick="closeModal('complaint-details-modal')" style="width: 100%;">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
   // Load my listings
   function loadMyListings() {
     const allListings = Store.getListings();
@@ -839,8 +1184,10 @@
 
   // Make functions globally available
   window.filterRequests = filterRequests;
+  window.filterComplaints = filterComplaints;
   window.filterListings = filterListings;
   window.viewRequestDetails = viewRequestDetails;
+  window.viewComplaintDetails = viewComplaintDetails;
   window.cancelRequest = cancelRequest;
   window.showCreateListing = showCreateListing;
   window.viewListing = viewListing;
@@ -849,6 +1196,74 @@
   window.editProfile = editProfile;
   window.changePassword = changePassword;
   window.closeModal = closeModal;
+
+  // Sidebar functions
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  }
+
+  function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+  function navigateToSection(sectionId) {
+    // Update active state
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    event.target.closest('.sidebar-item').classList.add('active');
+    
+    // Scroll to section
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Close sidebar on mobile
+    if (window.innerWidth <= 768) {
+      closeSidebar();
+    }
+  }
+
+  // Close sidebar with ESC key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeSidebar();
+    }
+  });
+
+  // Update active sidebar item on scroll
+  window.addEventListener('scroll', () => {
+    const sections = ['dashboard', 'my-requests', 'my-complaints', 'my-profile'];
+    const scrollPos = window.scrollY + 100;
+    
+    sections.forEach(sectionId => {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        const sectionTop = section.offsetTop;
+        const sectionBottom = sectionTop + section.offsetHeight;
+        
+        if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+          document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('href') === '#' + sectionId) {
+              item.classList.add('active');
+            }
+          });
+        }
+      }
+    });
+  });
+
+  window.toggleSidebar = toggleSidebar;
+  window.closeSidebar = closeSidebar;
+  window.navigateToSection = navigateToSection;
 
   // Initialize on page load
   initDashboard();

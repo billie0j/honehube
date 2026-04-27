@@ -335,6 +335,71 @@ const API = {
         csrf_token: this.csrfToken
       })
     });
+  },
+
+  // ========== COMPLAINTS API ==========
+
+  /**
+   * Submit a complaint
+   */
+  async submitComplaint(complaintData) {
+    return await this.request('/complaints.php?action=submit', {
+      method: 'POST',
+      body: JSON.stringify({
+        ...complaintData,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Get all complaints (Admin only)
+   */
+  async getAllComplaints(filters = {}) {
+    const params = new URLSearchParams(filters);
+    return await this.request(`/complaints.php?action=list&${params}`);
+  },
+
+  /**
+   * Get user's complaints
+   */
+  async getMyComplaints() {
+    return await this.request('/complaints.php?action=my_complaints');
+  },
+
+  /**
+   * Get single complaint
+   */
+  async getComplaint(id) {
+    return await this.request(`/complaints.php?action=get&id=${id}`);
+  },
+
+  /**
+   * Update complaint status (Admin only)
+   */
+  async updateComplaintStatus(complaintId, status, adminResponse = '') {
+    return await this.request('/complaints.php?action=update_status', {
+      method: 'POST',
+      body: JSON.stringify({
+        complaint_id: complaintId,
+        status,
+        admin_response: adminResponse,
+        csrf_token: this.csrfToken
+      })
+    });
+  },
+
+  /**
+   * Delete complaint (Admin only)
+   */
+  async deleteComplaint(complaintId) {
+    return await this.request('/complaints.php?action=delete', {
+      method: 'POST',
+      body: JSON.stringify({
+        complaint_id: complaintId,
+        csrf_token: this.csrfToken
+      })
+    });
   }
 };
 

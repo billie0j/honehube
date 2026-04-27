@@ -223,9 +223,179 @@
       margin-bottom: 20px;
       opacity: 0.5;
     }
+    /* Sidebar Styles */
+    .sidebar {
+      position: fixed;
+      left: -280px;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: white;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      transition: left 0.3s ease-in-out;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    .sidebar.open {
+      left: 0;
+    }
+    .sidebar-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sidebar-menu {
+      padding: 20px 0;
+    }
+    .sidebar-item {
+      padding: 15px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #333;
+      text-decoration: none;
+      border-left: 4px solid transparent;
+    }
+    .sidebar-item:hover {
+      background: #f8f9fa;
+      border-left-color: #667eea;
+    }
+    .sidebar-item.active {
+      background: #e3f2fd;
+      border-left-color: #667eea;
+      color: #667eea;
+      font-weight: 600;
+    }
+    .sidebar-item-icon {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+    }
+    .sidebar-item-text {
+      flex: 1;
+    }
+    .sidebar-item-badge {
+      background: #dc3545;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .sidebar-toggle {
+      position: fixed;
+      top: 80px;
+      left: 20px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 999;
+      transition: all 0.3s;
+    }
+    .sidebar-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      display: none;
+    }
+    .sidebar-overlay.show {
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        left: -100%;
+        width: 80%;
+        max-width: 300px;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+    }
   </style>
 </head>
 <body>
+
+<!-- Sidebar Toggle Button -->
+<button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle Sidebar">
+  ☰
+</button>
+
+<!-- Sidebar Overlay (for mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span>👨‍💼</span>
+    <span>Admin Panel</span>
+  </div>
+  <nav class="sidebar-menu">
+    <a href="#dashboard" class="sidebar-item active" onclick="navigateToSection('dashboard')">
+      <span class="sidebar-item-icon">📊</span>
+      <span class="sidebar-item-text">Dashboard</span>
+    </a>
+    <a href="#users" class="sidebar-item" onclick="navigateToSection('users')">
+      <span class="sidebar-item-icon">👥</span>
+      <span class="sidebar-item-text">Users</span>
+      <span class="sidebar-item-badge" id="sidebar-users-count">0</span>
+    </a>
+    <a href="#listings" class="sidebar-item" onclick="navigateToSection('listings')">
+      <span class="sidebar-item-icon">📦</span>
+      <span class="sidebar-item-text">Listings</span>
+      <span class="sidebar-item-badge" id="sidebar-listings-count">0</span>
+    </a>
+    <a href="#inquiries" class="sidebar-item" onclick="navigateToSection('inquiries')">
+      <span class="sidebar-item-icon">📧</span>
+      <span class="sidebar-item-text">Requests</span>
+      <span class="sidebar-item-badge" id="sidebar-inquiries-count">0</span>
+    </a>
+    <a href="#complaints" class="sidebar-item" onclick="navigateToSection('complaints')">
+      <span class="sidebar-item-icon">📋</span>
+      <span class="sidebar-item-text">Complaints</span>
+      <span class="sidebar-item-badge" id="sidebar-complaints-count">0</span>
+    </a>
+    <div class="sidebar-item" onclick="showReports()">
+      <span class="sidebar-item-icon">📈</span>
+      <span class="sidebar-item-text">Reports</span>
+    </div>
+    <div class="sidebar-item" onclick="showCreateListingModal()">
+      <span class="sidebar-item-icon">➕</span>
+      <span class="sidebar-item-text">New Listing</span>
+    </div>
+    <div class="sidebar-item" onclick="location.href='index.html'">
+      <span class="sidebar-item-icon">🏠</span>
+      <span class="sidebar-item-text">Browse Items</span>
+    </div>
+    <div class="sidebar-item" onclick="location.href='login.html'">
+      <span class="sidebar-item-icon">🚪</span>
+      <span class="sidebar-item-text">Logout</span>
+    </div>
+  </nav>
+</aside>
 
 <nav class="navbar" id="navbar"></nav>
 
@@ -265,6 +435,13 @@
       <div class="stat-label">Inquiries</div>
       <div class="stat-change positive">↑ <span id="inquiries-change">0</span> pending</div>
     </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-value" id="total-complaints">0</div>
+      <div class="stat-label">Complaints</div>
+      <div class="stat-change positive">↑ <span id="complaints-change">0</span> pending</div>
+    </div>
   </div>
 
   <!-- Quick Actions -->
@@ -284,6 +461,10 @@
     <div class="quick-action-card" onclick="location.href='#inquiries'">
       <div class="quick-action-icon">📧</div>
       <div class="quick-action-label">View Requests</div>
+    </div>
+    <div class="quick-action-card" onclick="location.href='#complaints'">
+      <div class="quick-action-icon">📋</div>
+      <div class="quick-action-label">View Complaints</div>
     </div>
     <div class="quick-action-card" onclick="showReports()">
       <div class="quick-action-icon">📊</div>
@@ -394,10 +575,48 @@
       </table>
     </div>
   </div>
+
+  <!-- Complaints Section -->
+  <div class="dashboard-section" id="complaints">
+    <div class="section-header">
+      <h2>📋 Item Complaints</h2>
+      <div class="section-actions">
+        <button class="btn-small btn-secondary-small" onclick="filterComplaintsBy('all')">All</button>
+        <button class="btn-small btn-secondary-small" onclick="filterComplaintsBy('pending')">Pending</button>
+        <button class="btn-small btn-secondary-small" onclick="filterComplaintsBy('investigating')">Investigating</button>
+        <button class="btn-small btn-primary-small" onclick="refreshComplaints()">🔄 Refresh</button>
+      </div>
+    </div>
+    <div id="complaints-table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Student</th>
+            <th>Item</th>
+            <th>Issue Type</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="complaints-tbody">
+          <tr>
+            <td colspan="8" class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <p>Loading complaints...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script src="../assets/js/store.js"></script>
 <script src="../assets/js/api.js"></script>
+<script src="../assets/js/hybrid-store.js"></script>
 <script src="../assets/js/navbar.js"></script>
 <script>
   // Check if user is admin
@@ -429,6 +648,7 @@
     loadUsers();
     loadListings();
     loadInquiries();
+    loadComplaints();
   }
 
   // Load statistics
@@ -439,6 +659,10 @@
     document.getElementById('total-users').textContent = users.length;
     document.getElementById('total-listings').textContent = listings.filter(l => l.status === 'active').length;
     
+    // Update sidebar counts
+    document.getElementById('sidebar-users-count').textContent = users.length;
+    document.getElementById('sidebar-listings-count').textContent = listings.filter(l => l.status === 'active').length;
+    
     const totalValue = listings.reduce((sum, l) => sum + parseFloat(l.price || 0), 0);
     document.getElementById('total-revenue').textContent = totalValue.toFixed(2);
     
@@ -448,10 +672,24 @@
       if (result.success) {
         document.getElementById('total-inquiries').textContent = result.requests.length;
         document.getElementById('inquiries-change').textContent = result.requests.length;
+        document.getElementById('sidebar-inquiries-count').textContent = result.requests.length;
+      }
+      
+      // Load complaints count
+      const complaintsResult = await API.getAllComplaints();
+      if (complaintsResult.success) {
+        const pendingComplaints = complaintsResult.complaints.filter(c => c.status === 'pending' || c.status === 'investigating');
+        document.getElementById('total-complaints').textContent = complaintsResult.complaints.length;
+        document.getElementById('complaints-change').textContent = pendingComplaints.length;
+        document.getElementById('sidebar-complaints-count').textContent = pendingComplaints.length;
       }
     } else {
       document.getElementById('total-inquiries').textContent = '0';
       document.getElementById('inquiries-change').textContent = '0';
+      document.getElementById('total-complaints').textContent = '0';
+      document.getElementById('complaints-change').textContent = '0';
+      document.getElementById('sidebar-inquiries-count').textContent = '0';
+      document.getElementById('sidebar-complaints-count').textContent = '0';
     }
     
     // Mock data for changes
@@ -516,6 +754,11 @@
             <div class="action-buttons">
               <button class="action-btn action-btn-view" onclick="viewListing(${listing.id})">View</button>
               <button class="action-btn action-btn-edit" onclick="editListing(${listing.id})">Edit</button>
+              ${listing.status === 'active' ? `
+                <button class="action-btn" style="background: #28a745; color: white;" onclick="markAsSold(${listing.id})">Mark Sold</button>
+              ` : listing.status === 'sold' ? `
+                <button class="action-btn" style="background: #17a2b8; color: white;" onclick="markAsAvailable(${listing.id})">Mark Available</button>
+              ` : ''}
               <button class="action-btn action-btn-delete" onclick="deleteListing(${listing.id})">Delete</button>
             </div>
           </td>
@@ -636,6 +879,36 @@
     }
   }
 
+  async function markAsSold(id) {
+    if (!confirm('Mark this item as SOLD?')) {
+      return;
+    }
+    
+    const result = await API.updateListing(id, { status: 'sold' });
+    if (result.success) {
+      alert('Item marked as SOLD');
+      refreshListings();
+      loadStatistics();
+    } else {
+      alert(result.message || 'Failed to update status');
+    }
+  }
+
+  async function markAsAvailable(id) {
+    if (!confirm('Mark this item as AVAILABLE again?')) {
+      return;
+    }
+    
+    const result = await API.updateListing(id, { status: 'active' });
+    if (result.success) {
+      alert('Item marked as AVAILABLE');
+      refreshListings();
+      loadStatistics();
+    } else {
+      alert(result.message || 'Failed to update status');
+    }
+  }
+
   async function viewRequest(id) {
     const result = await API.getRequest(id);
     if (result.success) {
@@ -684,6 +957,220 @@
 
   function refreshInquiries() {
     loadInquiries();
+  }
+
+  // Load complaints
+  async function loadComplaints(statusFilter = '') {
+    if (HybridStore.useAPI) {
+      const params = statusFilter ? { status: statusFilter } : {};
+      const result = await API.getAllComplaints(params);
+      if (result.success) {
+        displayComplaints(result.complaints);
+      } else {
+        console.error('Failed to load complaints:', result.message);
+      }
+    } else {
+      // Mock data for localStorage mode
+      const tbody = document.getElementById('complaints-tbody');
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">📋</div><p>No complaints yet</p></td></tr>';
+    }
+  }
+
+  function displayComplaints(complaints) {
+    const tbody = document.getElementById('complaints-tbody');
+    
+    if (complaints.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">📋</div><p>No complaints found</p></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = complaints.map(complaint => {
+      const statusClass = {
+        'pending': 'badge-warning',
+        'investigating': 'badge-info',
+        'resolved': 'badge-success',
+        'rejected': 'badge-danger'
+      }[complaint.status] || 'badge-secondary';
+
+      return `
+        <tr>
+          <td>${complaint.complaint_id}</td>
+          <td>${complaint.user_name}<br><small>${complaint.user_email}</small></td>
+          <td>${complaint.item_name}<br><small>K${parseFloat(complaint.original_price).toFixed(2)}</small></td>
+          <td>${complaint.complaint_type.replace('_', ' ')}</td>
+          <td>${complaint.subject}</td>
+          <td><span class="badge ${statusClass}">${complaint.status}</span></td>
+          <td>${new Date(complaint.created_at).toLocaleDateString()}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-btn action-btn-view" onclick="viewComplaint(${complaint.complaint_id})">View</button>
+              ${complaint.status === 'pending' || complaint.status === 'investigating' ? `
+                <button class="action-btn action-btn-edit" onclick="respondToComplaint(${complaint.complaint_id})">Respond</button>
+              ` : ''}
+              <button class="action-btn action-btn-delete" onclick="deleteComplaint(${complaint.complaint_id})">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function filterComplaintsBy(status) {
+    loadComplaints(status === 'all' ? '' : status);
+  }
+
+  function refreshComplaints() {
+    loadComplaints();
+    loadStatistics();
+  }
+
+  async function viewComplaint(id) {
+    const result = await API.getComplaint(id);
+    if (result.success) {
+      showComplaintDetailsModal(result.complaint);
+    } else {
+      alert('Failed to load complaint details');
+    }
+  }
+
+  function showComplaintDetailsModal(complaint) {
+    const modal = document.createElement('div');
+    modal.id = 'complaint-details-modal';
+    modal.innerHTML = `
+      <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 12px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto;">
+          <h2 style="margin-top: 0;">📋 Complaint Details</h2>
+          
+          <h3>Student Information</h3>
+          <div style="margin-bottom: 15px;">
+            <strong>Name:</strong> ${complaint.user_name}<br>
+            <strong>Email:</strong> ${complaint.user_email}
+          </div>
+          
+          <h3>Item Information</h3>
+          <div style="margin-bottom: 15px;">
+            <strong>Item:</strong> ${complaint.item_name}<br>
+            <strong>Price:</strong> K${parseFloat(complaint.original_price).toFixed(2)}<br>
+            ${complaint.item_description ? `<strong>Description:</strong> ${complaint.item_description}<br>` : ''}
+            ${complaint.item_image ? `<img src="${complaint.item_image}" alt="${complaint.item_name}" style="max-width: 200px; margin-top: 10px; border-radius: 8px;">` : ''}
+          </div>
+          
+          <h3>Complaint Details</h3>
+          <div style="margin-bottom: 15px;">
+            <strong>Status:</strong> <span class="badge badge-${complaint.status === 'pending' ? 'warning' : complaint.status === 'investigating' ? 'info' : complaint.status === 'resolved' ? 'success' : 'danger'}">${complaint.status}</span><br>
+            <strong>Issue Type:</strong> ${complaint.complaint_type.replace('_', ' ')}<br>
+            <strong>Subject:</strong> ${complaint.subject}<br>
+            <strong>Description:</strong><br>
+            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-top: 5px; white-space: pre-wrap;">
+              ${complaint.description}
+            </div>
+            <strong>Submitted:</strong> ${new Date(complaint.created_at).toLocaleString()}<br>
+            ${complaint.updated_at && complaint.updated_at !== complaint.created_at ? `<strong>Last Updated:</strong> ${new Date(complaint.updated_at).toLocaleString()}<br>` : ''}
+          </div>
+          
+          ${complaint.admin_response ? `
+            <h3>Your Response</h3>
+            <div style="padding: 15px; background: ${complaint.status === 'resolved' ? '#d4edda' : complaint.status === 'rejected' ? '#f8d7da' : '#d1ecf1'}; border-radius: 8px; margin-bottom: 15px; white-space: pre-wrap;">
+              ${complaint.admin_response}
+              ${complaint.resolved_at ? `<br><small style="color: #666;">Responded on: ${new Date(complaint.resolved_at).toLocaleString()}</small>` : ''}
+            </div>
+          ` : ''}
+          
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            ${complaint.status === 'pending' || complaint.status === 'investigating' ? `
+              <button type="button" class="btn btn-primary" onclick="respondToComplaint(${complaint.complaint_id}); closeModal('complaint-details-modal');" style="flex: 1;">Respond</button>
+            ` : ''}
+            <button type="button" class="btn btn-secondary" onclick="closeModal('complaint-details-modal')" style="flex: 1;">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  function respondToComplaint(complaintId) {
+    API.getComplaint(complaintId).then(result => {
+      if (!result.success) {
+        alert('Failed to load complaint details');
+        return;
+      }
+      
+      const complaint = result.complaint;
+      const modal = document.createElement('div');
+      modal.id = 'respond-complaint-modal';
+      modal.innerHTML = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+          <div style="background: white; padding: 30px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <h2 style="margin-top: 0;">Respond to Complaint</h2>
+            
+            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px;">
+              <strong>Student:</strong> ${complaint.user_name}<br>
+              <strong>Item:</strong> ${complaint.item_name}<br>
+              <strong>Issue:</strong> ${complaint.subject}<br>
+              <strong>Type:</strong> ${complaint.complaint_type.replace('_', ' ')}
+            </div>
+            
+            <form id="respond-complaint-form">
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Status *</label>
+                <select id="complaint-status" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                  <option value="pending" ${complaint.status === 'pending' ? 'selected' : ''}>Pending</option>
+                  <option value="investigating" ${complaint.status === 'investigating' ? 'selected' : ''}>Investigating</option>
+                  <option value="resolved" ${complaint.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                  <option value="rejected" ${complaint.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                </select>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Your Response *</label>
+                <textarea id="admin-response" required minlength="10" rows="6" placeholder="Provide your response to the student..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; resize: vertical;">${complaint.admin_response || ''}</textarea>
+                <small style="display: block; margin-top: 5px; color: #666;">Minimum 10 characters. Be clear and professional.</small>
+              </div>
+              
+              <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Response</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('respond-complaint-modal')" style="flex: 1;">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      document.getElementById('respond-complaint-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const status = document.getElementById('complaint-status').value;
+        const response = document.getElementById('admin-response').value.trim();
+        
+        if (response.length < 10) {
+          alert('Response must be at least 10 characters');
+          return;
+        }
+        
+        const result = await API.updateComplaintStatus(complaintId, status, response);
+        if (result.success) {
+          alert('Response submitted successfully!');
+          closeModal('respond-complaint-modal');
+          refreshComplaints();
+        } else {
+          alert(result.message || 'Failed to submit response');
+        }
+      });
+    });
+  }
+
+  async function deleteComplaint(id) {
+    if (!confirm('Are you sure you want to delete this complaint? This action cannot be undone.')) {
+      return;
+    }
+    
+    const result = await API.deleteComplaint(id);
+    if (result.success) {
+      alert('Complaint deleted successfully');
+      refreshComplaints();
+    } else {
+      alert(result.message || 'Failed to delete complaint');
+    }
   }
 
   function exportUsers() {
@@ -1082,18 +1569,93 @@
   window.viewListing = viewListing;
   window.editListing = editListing;
   window.deleteListing = deleteListing;
+  window.markAsSold = markAsSold;
+  window.markAsAvailable = markAsAvailable;
   window.viewRequest = viewRequest;
   window.acceptPurchaseRequest = acceptPurchaseRequest;
   window.denyPurchaseRequest = denyPurchaseRequest;
+  window.viewComplaint = viewComplaint;
+  window.respondToComplaint = respondToComplaint;
+  window.deleteComplaint = deleteComplaint;
+  window.filterComplaintsBy = filterComplaintsBy;
   window.refreshUsers = refreshUsers;
   window.refreshListings = refreshListings;
   window.refreshInquiries = refreshInquiries;
+  window.refreshComplaints = refreshComplaints;
   window.exportUsers = exportUsers;
   window.exportListings = exportListings;
   window.showReports = showReports;
   window.showCreateListingModal = showCreateListingModal;
   window.showCounterOfferForm = showCounterOfferForm;
   window.closeModal = closeModal;
+
+  // Sidebar functions
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  }
+
+  function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+  function navigateToSection(sectionId) {
+    // Update active state
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    event.target.closest('.sidebar-item').classList.add('active');
+    
+    // Scroll to section
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Close sidebar on mobile
+    if (window.innerWidth <= 768) {
+      closeSidebar();
+    }
+  }
+
+  // Close sidebar with ESC key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeSidebar();
+    }
+  });
+
+  // Update active sidebar item on scroll
+  window.addEventListener('scroll', () => {
+    const sections = ['dashboard', 'users', 'listings', 'inquiries', 'complaints'];
+    const scrollPos = window.scrollY + 100;
+    
+    sections.forEach(sectionId => {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        const sectionTop = section.offsetTop;
+        const sectionBottom = sectionTop + section.offsetHeight;
+        
+        if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+          document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('href') === '#' + sectionId) {
+              item.classList.add('active');
+            }
+          });
+        }
+      }
+    });
+  });
+
+  window.toggleSidebar = toggleSidebar;
+  window.closeSidebar = closeSidebar;
+  window.navigateToSection = navigateToSection;
 
   // Initialize on page load
   initDashboard();
