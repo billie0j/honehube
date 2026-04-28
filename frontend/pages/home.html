@@ -6,26 +6,207 @@
   <title>Honehube — Evelyn Hone College Laptop Marketplace</title>
   <link rel="stylesheet" href="../assets/css/style.css" />
   <link rel="stylesheet" href="css/home.css" />
+  <style>
+    /* ========== PROFESSIONAL HERO SECTION ========== */
+    .home-hero-wrapper {
+      position: relative;
+      overflow: hidden;
+      min-height: 600px;
+    }
+    
+    /* Background image layer */
+    .home-hero-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    
+    .home-hero-background img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    
+    /* Gradient overlay */
+    .home-hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.7) 0%, rgba(118, 75, 162, 0.7) 100%);
+      z-index: 2;
+    }
+    
+    /* Hero content */
+    .home-hero {
+      position: relative;
+      z-index: 3;
+    }
+    
+    /* ========== PROFESSIONAL STATS BAR ========== */
+    .home-stats {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    
+    .home-stat-value {
+      font-size: 2.5rem !important;
+      font-weight: 700 !important;
+      color: #ffffff;
+    }
+    
+    /* ========== PROFESSIONAL CATEGORY CARDS ========== */
+    .home-cat-card {
+      transition: all 0.3s ease;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .home-cat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+      border-color: #667eea;
+    }
+    
+    .home-cat-card span {
+      font-size: 2.5rem;
+    }
+    
+    /* ========== PROFESSIONAL PRODUCT CARDS ========== */
+    .listing-card {
+      transition: all 0.3s ease;
+      border: 1px solid #e0e0e0;
+      background: #ffffff;
+    }
+    
+    .listing-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      border-color: #667eea;
+    }
+    
+    .listing-img {
+      position: relative;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+    
+    .listing-img img {
+      transition: transform 0.3s ease;
+    }
+    
+    .listing-card:hover .listing-img img {
+      transform: scale(1.05);
+    }
+    
+    .listing-price {
+      font-size: 1.4rem !important;
+      font-weight: 700 !important;
+      color: #667eea !important;
+    }
+    
+    /* ========== PROFESSIONAL HOW IT WORKS ========== */
+    .home-step {
+      transition: all 0.3s ease;
+    }
+    
+    .home-step:hover {
+      transform: translateY(-5px);
+    }
+    
+    .home-step-icon {
+      font-size: 3rem !important;
+    }
+    
+    /* ========== PROFESSIONAL CTA SECTION ========== */
+    .home-cta {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    /* ========== PROFESSIONAL BUTTONS ========== */
+    .btn {
+      transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* ========== SECTION STYLING ========== */
+    .home-section-header h2 {
+      position: relative;
+      display: inline-block;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+    
+    .home-section-header h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+    
+    /* ========== BADGE STYLING ========== */
+    .badge {
+      font-weight: 600;
+    }
+    
+    /* ========== RESPONSIVE DESIGN ========== */
+    @media (max-width: 768px) {
+      .home-hero-wrapper {
+        min-height: 500px;
+      }
+      
+      .home-stat-value {
+        font-size: 2rem !important;
+      }
+      
+      .home-step-icon {
+        font-size: 2.5rem !important;
+      }
+    }
+  </style>
 </head>
 <body>
 
 <nav class="navbar" id="navbar"></nav>
 
-<!-- Hero -->
-<section class="home-hero" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%), url('../assets/images/landing.png') center/cover no-repeat;">
-  <div class="home-hero-content">
-    <div class="home-hero-badge">🎓 Evelyn Hone College</div>
-    <h1>Buy &amp; Sell Laptops<br>on Campus</h1>
-    <p>Honehube is the trusted marketplace for students and staff to buy, sell and find laptop parts — all within Evelyn Hone College.</p>
-    <div class="home-hero-actions">
-      <a href="index.html" class="btn btn-primary btn-lg">Browse Listings</a>
-      <a href="register.html" class="btn btn-outline-white btn-lg">Join Free</a>
+<!-- Hero with Background Image -->
+<div class="home-hero-wrapper">
+  <!-- Background Image -->
+  <div class="home-hero-background">
+    <img src="../assets/images/landing.png" alt="Evelyn Hone College Campus" />
+  </div>
+  
+  <!-- Gradient overlay -->
+  <div class="home-hero-overlay"></div>
+  
+  <!-- Hero Content -->
+  <section class="home-hero">
+    <div class="home-hero-content">
+      <div class="home-hero-badge">🎓 Evelyn Hone College</div>
+      <h1>Buy &amp; Sell Laptops<br>on Campus</h1>
+      <p>Honehube is the trusted marketplace for students and staff to buy, sell and find laptop parts — all within Evelyn Hone College.</p>
+      <div class="home-hero-actions">
+        <a href="index.html" class="btn btn-primary btn-lg">Browse Listings</a>
+        <a href="register.html" class="btn btn-outline-white btn-lg">Join Free</a>
+      </div>
     </div>
-  </div>
-  <div class="home-hero-visual">
-    <div class="hero-laptop">💻</div>
-  </div>
-</section>
+    <div class="home-hero-visual">
+      <div class="hero-laptop">💻</div>
+    </div>
+  </section>
+</div>
 
 <!-- Stats bar -->
 <section class="home-stats">
@@ -62,13 +243,15 @@
   </div>
 </section>
 
-<!-- Featured listings -->
-<section class="home-section">
-  <div class="home-section-header">
-    <h2>Latest Listings</h2>
-    <a href="index.html" class="home-see-all">View all →</a>
+<!-- All Available Products -->
+<section class="home-section" style="background: linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%); padding: 60px 20px;">
+  <div class="home-section-header" style="text-align: center; margin-bottom: 50px;">
+    <h2>🛒 Available Products</h2>
+    <p style="color: #666; font-size: 1.1rem; margin-top: 10px;">All products currently available in our marketplace</p>
   </div>
-  <div class="listings-grid" id="featured-listings"></div>
+  
+  <!-- All Products Grid -->
+  <div class="listings-grid" id="all-products"></div>
 </section>
 
 <!-- How it works -->
@@ -131,25 +314,40 @@
 <script>
   renderNavbar();
 
-  // Stats
-  document.getElementById('hs-listings').textContent = getListings().filter(l => l.status === 'active').length;
-  document.getElementById('hs-users').textContent    = getUsers().length;
+  // Get all products from Store
+  const allProducts = Store.getAccessories();
+  const users = Store.getUsers();
 
-  // Featured — latest 4
-  const featured = getListings().filter(l => l.status === 'active').slice(0, 4);
-  document.getElementById('featured-listings').innerHTML = featured.map(l => `
-    <a href="listing.html?id=${l.id}" class="listing-card card">
-      <div class="listing-img">
-        ${l.image ? `<img src="${l.image}" alt="${l.title}" />` : `<div class="listing-img-placeholder">💻</div>`}
-      </div>
-      <div class="listing-info">
-        <span class="badge badge-${l.condition_type}">${l.condition_type}</span>
-        <h3>${l.title}</h3>
-        <p class="listing-category">${l.category}</p>
-        <p class="listing-price">K${parseFloat(l.price).toFixed(2)}</p>
-        <p class="listing-seller">by ${l.seller_name}</p>
-      </div>
-    </a>`).join('');
+  // Display stats directly (no animation)
+  const statsListings = allProducts.filter(a => a.status === 'available').length;
+  const statsUsers = users.length;
+  
+  document.getElementById('hs-listings').textContent = statsListings;
+  document.getElementById('hs-users').textContent = statsUsers;
+
+  // Helper function to create product card HTML
+  function createProductCard(item) {
+    return `
+      <a href="listing.html?id=${item.id}" class="listing-card card">
+        <div class="listing-img">
+          ${item.image ? `<img src="${item.image}" alt="${item.item_name}" onerror="this.parentElement.innerHTML='<div class=\\'listing-img-placeholder\\'>💻</div>'" />` : `<div class="listing-img-placeholder">💻</div>`}
+        </div>
+        <div class="listing-info">
+          <span class="badge badge-new">Available</span>
+          <h3>${item.item_name}</h3>
+          <p class="listing-category">${item.category}</p>
+          <p class="listing-price">K${parseFloat(item.original_price).toFixed(2)}</p>
+          <p class="listing-seller">by Admin</p>
+        </div>
+      </a>`;
+  }
+
+  // Display ALL products from the system
+  const availableProducts = allProducts.filter(a => a.status === 'available');
+  
+  document.getElementById('all-products').innerHTML = availableProducts.length > 0
+    ? availableProducts.map(item => createProductCard(item)).join('')
+    : '<p style="text-align: center; color: #999; padding: 40px;">No products available at the moment</p>';
 </script>
 </body>
 </html>
