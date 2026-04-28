@@ -62,13 +62,11 @@
     
     /* ========== PROFESSIONAL CATEGORY CARDS ========== */
     .home-cat-card {
-      transition: all 0.3s ease;
       border: 1px solid #e0e0e0;
     }
     
     .home-cat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
       border-color: #667eea;
     }
     
@@ -78,14 +76,12 @@
     
     /* ========== PROFESSIONAL PRODUCT CARDS ========== */
     .listing-card {
-      transition: all 0.3s ease;
       border: 1px solid #e0e0e0;
       background: #ffffff;
     }
     
     .listing-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       border-color: #667eea;
     }
     
@@ -96,11 +92,9 @@
     }
     
     .listing-img img {
-      transition: transform 0.3s ease;
-    }
-    
-    .listing-card:hover .listing-img img {
-      transform: scale(1.05);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     
     .listing-price {
@@ -111,11 +105,11 @@
     
     /* ========== PROFESSIONAL HOW IT WORKS ========== */
     .home-step {
-      transition: all 0.3s ease;
+      padding: 20px;
     }
     
     .home-step:hover {
-      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     
     .home-step-icon {
@@ -129,12 +123,15 @@
     
     /* ========== PROFESSIONAL BUTTONS ========== */
     .btn {
-      transition: all 0.3s ease;
+      display: inline-block;
+      padding: 12px 24px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 600;
     }
     
     .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
     
     /* ========== SECTION STYLING ========== */

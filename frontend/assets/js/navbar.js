@@ -13,11 +13,13 @@ async function renderNavbar() {
   
   let navbarHTML = `
     <div class="navbar-brand">
-      <span>🏠</span> Honehube
+      <a href="home.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
+        <span>💻</span> Honehube
+      </a>
     </div>
     <div class="navbar-menu">
-      <a href="index.html">Home</a>
-      <a href="listing.html">Listings</a>
+      <a href="home.html">Home</a>
+      <a href="index.html">Browse</a>
   `;
 
   if (user) {
@@ -54,7 +56,7 @@ async function handleLogout(event) {
     Store.logout();
   }
   
-  window.location.href = 'index.html';
+  window.location.href = 'home.html';
 }
 
 // Make functions available globally

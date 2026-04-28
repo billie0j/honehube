@@ -309,12 +309,17 @@
     // Show loading state
     alertEl.innerHTML = '<div class="alert alert-info">Logging in...</div>';
 
+    // Debug logging
+    console.log('Login attempt:', { email: emailInput, rawInput: rawInput });
+    
     // Use HybridStore (API or localStorage)
     HybridStore.login({
       email: emailInput,
       password: document.getElementById('password').value,
       remember: remember
     }).then(result => {
+      console.log('Login result:', result); // Debug log
+      
       if (result.success) {
         if (remember) {
           localStorage.setItem('hh_remember', rawInput);
@@ -325,9 +330,12 @@
         alertEl.innerHTML = '<div class="alert alert-success">Login successful! Redirecting...</div>';
         
         setTimeout(() => {
-          location.href = 'index.html';
+          location.href = 'home.html';
         }, 1000);
       } else {
+        // Log the actual error for debugging
+        console.error('Login failed:', result.message);
+        
         // Generic error message for security
         alertEl.innerHTML = '<div class="alert alert-error">Login failed. Please check your credentials and try again.</div>';
         // Reset reCAPTCHA and regenerate CSRF token

@@ -367,15 +367,24 @@
 
     // Use HybridStore (API or localStorage)
     HybridStore.register(userData).then(result => {
+      console.log('Registration result:', result); // Debug log
       if (result.success) {
         alertEl.innerHTML = '<div class="alert alert-success">Account created successfully! Redirecting...</div>';
         
         setTimeout(() => {
-          location.href = 'index.html';
+          location.href = 'home.html';
         }, 1000);
       } else {
-        // Generic error message for security
-        alertEl.innerHTML = '<div class="alert alert-error">Unable to create account. Please try again.</div>';
+        // Log the actual error for debugging (remove in production)
+        console.error('Registration failed:', result.message);
+        
+        // Show specific error messages for common issues
+        let errorMessage = 'Unable to create account. Please try again.';
+        if (result.message && result.message.includes('already registered')) {
+          errorMessage = 'This email or student ID is already registered. Please use a different one or login.';
+        }
+        
+        alertEl.innerHTML = `<div class="alert alert-error">${errorMessage}</div>`;
         // Reset reCAPTCHA and regenerate CSRF token
         grecaptcha.reset();
         const newToken = generateCSRFToken();

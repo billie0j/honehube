@@ -50,18 +50,27 @@ const HybridStore = {
     const { name, email, password, student_id, studentId } = userData;
     const finalStudentId = student_id || studentId; // Handle both formats
     
+    console.log('Registration attempt:', { name, email, student_id: finalStudentId }); // Debug log
+    
     // Validation
     if (!name || !email || !password) {
+      console.error('Missing required fields'); // Debug log
       return { success: false, message: 'All fields are required' };
     }
     
     // Check if user exists
-    if (Store.findUserByEmail(email)) {
+    const existingUser = Store.findUserByEmail(email);
+    if (existingUser) {
+      console.error('Email already exists:', email); // Debug log
       return { success: false, message: 'Email already registered' };
     }
     
-    if (finalStudentId && Store.findUserByStudentId(finalStudentId)) {
-      return { success: false, message: 'Student ID already registered' };
+    if (finalStudentId) {
+      const existingStudent = Store.findUserByStudentId(finalStudentId);
+      if (existingStudent) {
+        console.error('Student ID already exists:', finalStudentId); // Debug log
+        return { success: false, message: 'Student ID already registered' };
+      }
     }
     
     // Create user
@@ -74,6 +83,8 @@ const HybridStore = {
       student_id: finalStudentId,
       role: 'student'
     });
+    
+    console.log('User created successfully:', user.id); // Debug log
     
     // Set current user and log them in
     Store.setCurrentUser(user, false);
@@ -94,12 +105,16 @@ const HybridStore = {
     const { email, identifier, password, remember } = credentials;
     const loginIdentifier = email || identifier; // Handle both formats
     
+    console.log('HybridStore.login called with:', { loginIdentifier, remember }); // Debug log
+    
     const user = Store.authenticate(loginIdentifier, password);
     
     if (!user) {
+      console.error('Login failed: Invalid credentials'); // Debug log
       return { success: false, message: 'Invalid credentials' };
     }
     
+    console.log('Login successful, setting current user'); // Debug log
     Store.setCurrentUser(user, remember);
     
     return { 

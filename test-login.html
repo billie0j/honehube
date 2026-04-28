@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Test - Honehube</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #4CAF50;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    button.test {
+      background: #2196F3;
+    }
+    button.test:hover {
+      background: #0b7dda;
+    }
+    input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 250px;
+      margin: 5px;
+    }
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #4CAF50;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Honehube Login Test Tool</h1>
+    
+    <div class="section">
+      <h2>Current Status</h2>
+      <div id="status"></div>
+    </div>
+
+    <div class="section">
+      <h2>View All Users</h2>
+      <button onclick="viewUsers()">📋 Show All Users</button>
+      <div id="users-list"></div>
+    </div>
+
+    <div class="section">
+      <h2>Test Login</h2>
+      <p>Enter credentials to test login:</p>
+      <div>
+        <input type="text" id="test-email" placeholder="Email or Student ID" />
+        <input type="password" id="test-password" placeholder="Password" />
+        <button onclick="testLogin()" class="test">🔑 Test Login</button>
+      </div>
+      <div id="login-result"></div>
+    </div>
+
+    <div class="section">
+      <h2>Quick Test Accounts</h2>
+      <button onclick="testAdminLogin()" class="test">Test Admin Login</button>
+      <button onclick="testStudentLogin()" class="test">Test Student Login</button>
+    </div>
+
+    <div class="section">
+      <h2>Output</h2>
+      <pre id="output">Click a button above to see results...</pre>
+    </div>
+  </div>
+
+  <script src="frontend/assets/js/store.js"></script>
+  <script src="frontend/assets/js/api.js"></script>
+  <script src="frontend/assets/js/hybrid-store.js"></script>
+  
+  <script>
+    // Initialize
+    HybridStore.init().then(() => {
+      updateStatus();
+      viewUsers();
+    });
+
+    function updateStatus() {
+      const users = Store.getUsers();
+      const currentUser = Store.getCurrentUser();
+      const statusDiv = document.getElementById('status');
+      
+      let html = '<div class="info">';
+      html += `<strong>Total Users:</strong> ${users.length}<br>`;
+      html += `<strong>Current User:</strong> ${currentUser ? currentUser.email + ' (' + currentUser.role + ')' : 'None (not logged in)'}<br>`;
+      html += `<strong>Storage Mode:</strong> ${HybridStore.useAPI ? 'API Backend' : 'localStorage'}<br>`;
+      html += `<strong>Initialized:</strong> ${localStorage.getItem('honehub_initialized') ? 'Yes' : 'No'}`;
+      html += '</div>';
+      
+      statusDiv.innerHTML = html;
+    }
+
+    function viewUsers() {
+      const users = Store.getUsers();
+      const usersDiv = document.getElementById('users-list');
+      const output = document.getElementById('output');
+      
+      if (users.length === 0) {
+        usersDiv.innerHTML = '<div class="error">No users found! System may not be initialized.</div>';
+        output.textContent = 'No users in database.';
+        return;
+      }
+      
+      let html = '<table>';
+      html += '<tr><th>ID</th><th>Name</th><th>Email</th><th>Student ID</th><th>Role</th><th>Password</th></tr>';
+      
+      users.forEach(u => {
+        const studentId = u.studentId || u.student_id || 'N/A';
+        html += `<tr>
+          <td>${u.id}</td>
+          <td>${u.name}</td>
+          <td>${u.email}</td>
+          <td>${studentId}</td>
+          <td>${u.role}</td>
+          <td>${u.password ? '••••••••' : 'MISSING!'}</td>
+        </tr>`;
+      });
+      
+      html += '</table>';
+      usersDiv.innerHTML = html;
+      
+      // Show in output too
+      const usersDisplay = users.map(u => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        studentId: u.studentId || u.student_id || 'N/A',
+        role: u.role,
+        password: u.password ? '(set)' : 'MISSING!'
+      }));
+      
+      output.textContent = JSON.stringify(usersDisplay, null, 2);
+    }
+
+    async function testLogin() {
+      const email = document.getElementById('test-email').value.trim();
+      const password = document.getElementById('test-password').value;
+      const resultDiv = document.getElementById('login-result');
+      const output = document.getElementById('output');
+      
+      if (!email || !password) {
+        resultDiv.innerHTML = '<div class="error">Please enter both email and password</div>';
+        return;
+      }
+      
+      resultDiv.innerHTML = '<div class="info">Testing login...</div>';
+      
+      let log = 'Login Test\n';
+      log += '==========\n\n';
+      log += `Email/ID: ${email}\n`;
+      log += `Password: ${password}\n\n`;
+      
+      try {
+        // Convert student ID to email if needed
+        const emailInput = email.includes('@') ? email : `${email.toLowerCase()}@evelynhone.ac.zw`;
+        log += `Converted to: ${emailInput}\n\n`;
+        
+        log += 'Calling HybridStore.login()...\n';
+        const result = await HybridStore.login({
+          email: emailInput,
+          password: password,
+          remember: false
+        });
+        
+        log += '\nResult:\n';
+        log += JSON.stringify(result, null, 2) + '\n\n';
+        
+        if (result.success) {
+          resultDiv.innerHTML = '<div class="success">✅ Login successful!</div>';
+          log += '✅ SUCCESS: Login successful\n';
+          log += 'User: ' + result.user.email + ' (' + result.user.role + ')\n';
+        } else {
+          resultDiv.innerHTML = '<div class="error">❌ Login failed: ' + result.message + '</div>';
+          log += '❌ FAILED: ' + result.message + '\n';
+        }
+        
+        // Check current user
+        const currentUser = Store.getCurrentUser();
+        log += '\nCurrent User After Login:\n';
+        log += currentUser ? JSON.stringify({
+          id: currentUser.id,
+          email: currentUser.email,
+          role: currentUser.role
+        }, null, 2) : 'None';
+        
+      } catch (error) {
+        resultDiv.innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
+        log += '❌ ERROR: ' + error.message + '\n';
+        log += error.stack;
+      }
+      
+      output.textContent = log;
+      updateStatus();
+    }
+
+    async function testAdminLogin() {
+      document.getElementById('test-email').value = 'admin@honehube.com';
+      document.getElementById('test-password').value = 'Admin@123';
+      await testLogin();
+    }
+
+    async function testStudentLogin() {
+      const users = Store.getUsers();
+      const student = users.find(u => u.role === 'student');
+      
+      if (!student) {
+        document.getElementById('login-result').innerHTML = '<div class="error">No student accounts found. Please register one first.</div>';
+        return;
+      }
+      
+      document.getElementById('test-email').value = student.email;
+      document.getElementById('test-password').value = student.password; // In real app, you wouldn't have access to this
+      
+      document.getElementById('output').textContent = `Testing with student account:\nEmail: ${student.email}\nPassword: ${student.password}\n\nNote: In production, you wouldn't have access to the password.`;
+    }
+  </script>
+</body>
+</html>

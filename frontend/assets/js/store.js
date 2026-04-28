@@ -33,6 +33,7 @@ const Store = {
     user.role = user.role || 'student';
     users.push(user);
     this.saveUsers(users);
+    console.log('User added successfully:', { id: user.id, email: user.email, name: user.name }); // Debug log
     return user;
   },
 
@@ -45,22 +46,32 @@ const Store = {
   // Find user by student ID
   findUserByStudentId(studentId) {
     const users = this.getUsers();
-    return users.find(u => u.studentId && u.studentId.toLowerCase() === studentId.toLowerCase());
+    return users.find(u => {
+      const userStudentId = u.studentId || u.student_id;
+      return userStudentId && userStudentId.toLowerCase() === studentId.toLowerCase();
+    });
   },
 
   // Authenticate user
   authenticate(identifier, password) {
+    console.log('Authenticating:', identifier); // Debug log
+    
     // Try email first
     let user = this.findUserByEmail(identifier);
+    console.log('Found by email:', user ? user.email : 'not found'); // Debug log
     
     // Try student ID if not found by email
     if (!user) {
       user = this.findUserByStudentId(identifier);
+      console.log('Found by student ID:', user ? user.email : 'not found'); // Debug log
     }
     
     if (user && user.password === password) {
+      console.log('Authentication successful:', user.email); // Debug log
       return user;
     }
+    
+    console.error('Authentication failed:', user ? 'wrong password' : 'user not found'); // Debug log
     return null;
   },
 
