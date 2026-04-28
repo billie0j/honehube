@@ -47,7 +47,8 @@ const HybridStore = {
     }
     
     // Client-side registration
-    const { name, email, password, studentId } = userData;
+    const { name, email, password, student_id, studentId } = userData;
+    const finalStudentId = student_id || studentId; // Handle both formats
     
     // Validation
     if (!name || !email || !password) {
@@ -59,7 +60,7 @@ const HybridStore = {
       return { success: false, message: 'Email already registered' };
     }
     
-    if (studentId && Store.findUserByStudentId(studentId)) {
+    if (finalStudentId && Store.findUserByStudentId(finalStudentId)) {
       return { success: false, message: 'Student ID already registered' };
     }
     
@@ -69,10 +70,13 @@ const HybridStore = {
       full_name: name,
       email,
       password, // In production, this should be hashed
-      studentId,
-      student_id: studentId,
+      studentId: finalStudentId,
+      student_id: finalStudentId,
       role: 'student'
     });
+    
+    // Set current user and log them in
+    Store.setCurrentUser(user, false);
     
     return { 
       success: true, 
@@ -87,9 +91,10 @@ const HybridStore = {
     }
     
     // Client-side login
-    const { identifier, password, remember } = credentials;
+    const { email, identifier, password, remember } = credentials;
+    const loginIdentifier = email || identifier; // Handle both formats
     
-    const user = Store.authenticate(identifier, password);
+    const user = Store.authenticate(loginIdentifier, password);
     
     if (!user) {
       return { success: false, message: 'Invalid credentials' };
