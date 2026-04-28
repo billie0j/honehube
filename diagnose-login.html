@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Diagnostics - Honehube</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #667eea;
+    }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #5568d3;
+    }
+    button.fix {
+      background: #28a745;
+    }
+    button.fix:hover {
+      background: #218838;
+    }
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+    .status {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Login Diagnostics Tool</h1>
+    
+    <div class="section">
+      <h2>Quick Diagnosis</h2>
+      <button onclick="runFullDiagnosis()">🔍 Run Full Diagnosis</button>
+      <button onclick="fixAdminAccount()" class="fix">🔧 Fix Admin Account</button>
+      <button onclick="testAdminLogin()">🔑 Test Admin Login</button>
+      <div id="diagnosis-result"></div>
+    </div>
+
+    <div class="section">
+      <h2>System Status</h2>
+      <div id="system-status"></div>
+    </div>
+
+    <div class="section">
+      <h2>Detailed Output</h2>
+      <pre id="output">Click "Run Full Diagnosis" to start...</pre>
+    </div>
+  </div>
+
+  <script src="frontend/assets/js/store.js"></script>
+  <script src="frontend/assets/js/api.js"></script>
+  <script src="frontend/assets/js/hybrid-store.js"></script>
+  
+  <script>
+    // Initialize
+    HybridStore.init().then(() => {
+      updateSystemStatus();
+    });
+
+    function updateSystemStatus() {
+      const statusDiv = document.getElementById('system-status');
+      const users = Store.getUsers();
+      const admin = Store.findUserByEmail('admin@honehube.com');
+      
+      let html = '';
+      
+      // Check if system is initialized
+      const initialized = localStorage.getItem('honehub_initialized');
+      html += `<div class="${initialized ? 'success' : 'error'}">`;
+      html += `<strong>System Initialized:</strong> ${initialized ? '✅ Yes' : '❌ No'}`;
+      html += '</div>';
+      
+      // Check total users
+      html += `<div class="${users.length > 0 ? 'success' : 'error'}">`;
+      html += `<strong>Total Users:</strong> ${users.length}`;
+      html += '</div>';
+      
+      // Check admin account
+      html += `<div class="${admin ? 'success' : 'error'}">`;
+      html += `<strong>Admin Account:</strong> ${admin ? '✅ Exists' : '❌ Missing'}`;
+      html += '</div>';
+      
+      if (admin) {
+        html += `<div class="${admin.password === 'Admin@123' ? 'success' : 'warning'}">`;
+        html += `<strong>Admin Password:</strong> ${admin.password === 'Admin@123' ? '✅ Correct' : '⚠️ Different'}`;
+        html += `<br><small>Expected: Admin@123, Found: ${admin.password}</small>`;
+        html += '</div>';
+      }
+      
+      statusDiv.innerHTML = html;
+    }
+
+    function runFullDiagnosis() {
+      const resultDiv = document.getElementById('diagnosis-result');
+      const output = document.getElementById('output');
+      
+      let log = 'FULL SYSTEM DIAGNOSIS\n';
+      log += '='.repeat(60) + '\n\n';
+      
+      // 1. Check localStorage
+      log += '1. CHECKING LOCALSTORAGE\n';
+      log += '-'.repeat(60) + '\n';
+      try {
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+        log += '✅ localStorage is working\n\n';
+      } catch (e) {
+        log += '❌ localStorage ERROR: ' + e.message + '\n\n';
+        resultDiv.innerHTML = '<div class="error">❌ localStorage is not working! Check browser settings.</div>';
+        output.textContent = log;
+        return;
+      }
+      
+      // 2. Check initialization
+      log += '2. CHECKING SYSTEM INITIALIZATION\n';
+      log += '-'.repeat(60) + '\n';
+      const initialized = localStorage.getItem('honehub_initialized');
+      log += `Initialized: ${initialized ? 'Yes' : 'No'}\n`;
+      if (!initialized) {
+        log += '⚠️ System not initialized. Running Store.initialize()...\n';
+        Store.initialize();
+        log += '✅ Initialization complete\n\n';
+      } else {
+        log += '✅ System already initialized\n\n';
+      }
+      
+      // 3. Check users
+      log += '3. CHECKING USERS\n';
+      log += '-'.repeat(60) + '\n';
+      const users = Store.getUsers();
+      log += `Total users: ${users.length}\n\n`;
+      
+      if (users.length === 0) {
+        log += '❌ NO USERS FOUND!\n';
+        log += '⚠️ This is the problem. Creating admin account...\n\n';
+        resultDiv.innerHTML = '<div class="error">❌ No users found! Click "Fix Admin Account" to create it.</div>';
+      } else {
+        log += 'Users in database:\n';
+        users.forEach((u, i) => {
+          log += `\n  User ${i + 1}:\n`;
+          log += `    ID: ${u.id}\n`;
+          log += `    Name: ${u.name}\n`;
+          log += `    Email: ${u.email}\n`;
+          log += `    Role: ${u.role}\n`;
+          log += `    Password: ${u.password ? '(set)' : 'MISSING!'}\n`;
+          log += `    Student ID: ${u.studentId || u.student_id || 'N/A'}\n`;
+        });
+        log += '\n';
+      }
+      
+      // 4. Check admin account specifically
+      log += '4. CHECKING ADMIN ACCOUNT\n';
+      log += '-'.repeat(60) + '\n';
+      const admin = Store.findUserByEmail('admin@honehube.com');
+      
+      if (!admin) {
+        log += '❌ ADMIN ACCOUNT NOT FOUND!\n';
+        log += '⚠️ This is why login is failing.\n';
+        log += '✅ Solution: Click "Fix Admin Account" button\n\n';
+        resultDiv.innerHTML = '<div class="error">❌ Admin account not found! Click "Fix Admin Account" to create it.</div>';
+      } else {
+        log += '✅ Admin account exists\n';
+        log += `   Email: ${admin.email}\n`;
+        log += `   Password: ${admin.password}\n`;
+        log += `   Role: ${admin.role}\n\n`;
+        
+        // Check password
+        if (admin.password === 'Admin@123') {
+          log += '✅ Password is correct: Admin@123\n\n';
+          resultDiv.innerHTML = '<div class="success">✅ Admin account looks good! Try logging in again.</div>';
+        } else {
+          log += `⚠️ Password is different!\n`;
+          log += `   Expected: Admin@123\n`;
+          log += `   Found: ${admin.password}\n`;
+          log += '✅ Solution: Click "Fix Admin Account" to reset password\n\n';
+          resultDiv.innerHTML = '<div class="warning">⚠️ Admin password is different! Click "Fix Admin Account" to reset it.</div>';
+        }
+      }
+      
+      // 5. Test authentication
+      log += '5. TESTING AUTHENTICATION\n';
+      log += '-'.repeat(60) + '\n';
+      if (admin) {
+        const authResult = Store.authenticate('admin@honehube.com', 'Admin@123');
+        if (authResult) {
+          log += '✅ Authentication SUCCESSFUL!\n';
+          log += `   Authenticated as: ${authResult.email}\n`;
+          log += `   Role: ${authResult.role}\n\n`;
+          if (!resultDiv.innerHTML.includes('success')) {
+            resultDiv.innerHTML = '<div class="success">✅ Authentication works! You should be able to login now.</div>';
+          }
+        } else {
+          log += '❌ Authentication FAILED!\n';
+          log += '⚠️ Password does not match.\n';
+          log += `   Trying with stored password: ${admin.password}\n`;
+          const authResult2 = Store.authenticate('admin@honehube.com', admin.password);
+          if (authResult2) {
+            log += `✅ Authentication works with password: ${admin.password}\n`;
+            log += '⚠️ But expected password is: Admin@123\n';
+            log += '✅ Solution: Click "Fix Admin Account" to reset password\n\n';
+            resultDiv.innerHTML = '<div class="warning">⚠️ Admin password is wrong! Click "Fix Admin Account" to fix it.</div>';
+          } else {
+            log += '❌ Authentication failed with both passwords!\n';
+            log += '⚠️ Something is wrong with the account.\n';
+            log += '✅ Solution: Click "Fix Admin Account" to recreate it\n\n';
+            resultDiv.innerHTML = '<div class="error">❌ Admin account is corrupted! Click "Fix Admin Account" to fix it.</div>';
+          }
+        }
+      } else {
+        log += '❌ Cannot test - admin account does not exist\n\n';
+      }
+      
+      // 6. Summary
+      log += '6. SUMMARY\n';
+      log += '-'.repeat(60) + '\n';
+      if (admin && admin.password === 'Admin@123') {
+        log += '✅ Everything looks good!\n';
+        log += '✅ You should be able to login with:\n';
+        log += '   Email: admin@honehube.com\n';
+        log += '   Password: Admin@123\n\n';
+        log += 'If login still fails:\n';
+        log += '1. Clear browser cache (Ctrl+Shift+Delete)\n';
+        log += '2. Try incognito/private mode\n';
+        log += '3. Check browser console (F12) for errors\n';
+      } else if (!admin) {
+        log += '❌ PROBLEM: Admin account does not exist\n';
+        log += '✅ SOLUTION: Click "Fix Admin Account" button above\n';
+      } else {
+        log += '⚠️ PROBLEM: Admin password is incorrect\n';
+        log += `   Current password: ${admin.password}\n`;
+        log += '   Expected password: Admin@123\n';
+        log += '✅ SOLUTION: Click "Fix Admin Account" button above\n';
+      }
+      
+      output.textContent = log;
+      updateSystemStatus();
+    }
+
+    function fixAdminAccount() {
+      const resultDiv = document.getElementById('diagnosis-result');
+      const output = document.getElementById('output');
+      
+      let log = 'FIXING ADMIN ACCOUNT\n';
+      log += '='.repeat(60) + '\n\n';
+      
+      // Check if admin exists
+      const users = Store.getUsers();
+      const adminIndex = users.findIndex(u => u.email === 'admin@honehube.com');
+      
+      if (adminIndex !== -1) {
+        log += '1. Found existing admin account\n';
+        log += '2. Updating password to: Admin@123\n';
+        
+        users[adminIndex].password = 'Admin@123';
+        users[adminIndex].role = 'admin';
+        users[adminIndex].name = 'Admin User';
+        users[adminIndex].full_name = 'Admin User';
+        
+        Store.saveUsers(users);
+        
+        log += '3. ✅ Admin account updated!\n\n';
+      } else {
+        log += '1. Admin account does not exist\n';
+        log += '2. Creating new admin account...\n';
+        
+        Store.addUser({
+          id: 1,
+          name: 'Admin User',
+          full_name: 'Admin User',
+          email: 'admin@honehube.com',
+          password: 'Admin@123',
+          role: 'admin',
+          createdAt: new Date().toISOString(),
+          created_at: new Date().toISOString()
+        });
+        
+        log += '3. ✅ Admin account created!\n\n';
+      }
+      
+      // Verify
+      const admin = Store.findUserByEmail('admin@honehube.com');
+      log += 'VERIFICATION:\n';
+      log += '-'.repeat(60) + '\n';
+      log += `Email: ${admin.email}\n`;
+      log += `Password: ${admin.password}\n`;
+      log += `Role: ${admin.role}\n\n`;
+      
+      // Test authentication
+      const authResult = Store.authenticate('admin@honehube.com', 'Admin@123');
+      if (authResult) {
+        log += '✅ Authentication test PASSED!\n\n';
+        log += 'YOU CAN NOW LOGIN WITH:\n';
+        log += '  Email: admin@honehube.com\n';
+        log += '  Password: Admin@123\n\n';
+        
+        resultDiv.innerHTML = '<div class="success">✅ Admin account fixed! You can now login with admin@honehube.com / Admin@123</div>';
+      } else {
+        log += '❌ Authentication test FAILED!\n';
+        log += '⚠️ Something went wrong. Try running diagnosis again.\n';
+        resultDiv.innerHTML = '<div class="error">❌ Fix failed! Run diagnosis again.</div>';
+      }
+      
+      output.textContent = log;
+      updateSystemStatus();
+    }
+
+    async function testAdminLogin() {
+      const resultDiv = document.getElementById('diagnosis-result');
+      const output = document.getElementById('output');
+      
+      let log = 'TESTING ADMIN LOGIN\n';
+      log += '='.repeat(60) + '\n\n';
+      
+      resultDiv.innerHTML = '<div class="info">Testing login...</div>';
+      
+      try {
+        log += '1. Calling HybridStore.login()...\n';
+        const result = await HybridStore.login({
+          email: 'admin@honehube.com',
+          password: 'Admin@123',
+          remember: false
+        });
+        
+        log += '2. Result received:\n';
+        log += JSON.stringify(result, null, 2) + '\n\n';
+        
+        if (result.success) {
+          log += '✅ LOGIN SUCCESSFUL!\n\n';
+          log += 'User details:\n';
+          log += `  Email: ${result.user.email}\n`;
+          log += `  Name: ${result.user.name}\n`;
+          log += `  Role: ${result.user.role}\n\n`;
+          
+          log += '✅ You can now login at:\n';
+          log += '   http://localhost:8080/honehube/frontend/pages/login.html\n';
+          
+          resultDiv.innerHTML = '<div class="success">✅ Login test PASSED! Go to login page and use admin@honehube.com / Admin@123</div>';
+        } else {
+          log += '❌ LOGIN FAILED!\n';
+          log += `   Error: ${result.message}\n\n`;
+          log += '⚠️ Click "Fix Admin Account" to resolve this.\n';
+          
+          resultDiv.innerHTML = '<div class="error">❌ Login test FAILED! Click "Fix Admin Account" button.</div>';
+        }
+      } catch (error) {
+        log += '❌ ERROR during login test:\n';
+        log += error.message + '\n';
+        log += error.stack + '\n';
+        
+        resultDiv.innerHTML = '<div class="error">❌ Error during test! Check output for details.</div>';
+      }
+      
+      output.textContent = log;
+      updateSystemStatus();
+    }
+
+    // Auto-run diagnosis on load
+    window.addEventListener('load', () => {
+      setTimeout(runFullDiagnosis, 500);
+    });
+  </script>
+</body>
+</html>

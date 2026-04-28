@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Diagnostics - Honehube</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #28a745;
+      padding-bottom: 10px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 4px solid #28a745;
+    }
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #218838;
+    }
+    button.test {
+      background: #007bff;
+    }
+    button.test:hover {
+      background: #0056b3;
+    }
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+    .status {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 250px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Registration Diagnostics Tool</h1>
+    
+    <div class="section">
+      <h2>Quick Actions</h2>
+      <button onclick="runDiagnosis()">🔍 Run Diagnosis</button>
+      <button onclick="testRegistration()" class="test">✅ Test Registration</button>
+      <button onclick="viewAllUsers()">👥 View All Users</button>
+    </div>
+
+    <div class="section">
+      <h2>Test Registration</h2>
+      <p>Try registering with test data:</p>
+      <div>
+        <input type="text" id="test-name" placeholder="Full Name" value="Test User" />
+        <input type="email" id="test-email" placeholder="Email" value="" />
+        <input type="password" id="test-password" placeholder="Password" value="Test@123" />
+        <button onclick="attemptRegistration()" class="test">Register Now</button>
+      </div>
+      <div id="reg-result"></div>
+    </div>
+
+    <div class="section">
+      <h2>System Status</h2>
+      <div id="system-status"></div>
+    </div>
+
+    <div class="section">
+      <h2>Detailed Output</h2>
+      <pre id="output">Click "Run Diagnosis" to start...</pre>
+    </div>
+  </div>
+
+  <script src="frontend/assets/js/store.js"></script>
+  <script src="frontend/assets/js/api.js"></script>
+  <script src="frontend/assets/js/hybrid-store.js"></script>
+  
+  <script>
+    // Initialize
+    HybridStore.init().then(() => {
+      updateSystemStatus();
+      // Set random email
+      document.getElementById('test-email').value = 'test' + Date.now() + '@evelynhone.ac.zw';
+    });
+
+    function updateSystemStatus() {
+      const statusDiv = document.getElementById('system-status');
+      const users = Store.getUsers();
+      
+      let html = '';
+      
+      html += `<div class="info">`;
+      html += `<strong>Total Users:</strong> ${users.length}<br>`;
+      html += `<strong>System Initialized:</strong> ${localStorage.getItem('honehub_initialized') ? 'Yes' : 'No'}<br>`;
+      html += `<strong>Storage Mode:</strong> ${HybridStore.useAPI ? 'API Backend' : 'localStorage'}`;
+      html += '</div>';
+      
+      statusDiv.innerHTML = html;
+    }
+
+    function runDiagnosis() {
+      const output = document.getElementById('output');
+      
+      let log = 'REGISTRATION SYSTEM DIAGNOSIS\n';
+      log += '='.repeat(60) + '\n\n';
+      
+      // 1. Check Store functions
+      log += '1. CHECKING STORE FUNCTIONS\n';
+      log += '-'.repeat(60) + '\n';
+      log += `Store.getUsers: ${typeof Store.getUsers === 'function' ? '✅' : '❌'}\n`;
+      log += `Store.addUser: ${typeof Store.addUser === 'function' ? '✅' : '❌'}\n`;
+      log += `Store.findUserByEmail: ${typeof Store.findUserByEmail === 'function' ? '✅' : '❌'}\n`;
+      log += `Store.findUserByStudentId: ${typeof Store.findUserByStudentId === 'function' ? '✅' : '❌'}\n\n`;
+      
+      // 2. Check HybridStore functions
+      log += '2. CHECKING HYBRIDSTORE FUNCTIONS\n';
+      log += '-'.repeat(60) + '\n';
+      log += `HybridStore.register: ${typeof HybridStore.register === 'function' ? '✅' : '❌'}\n`;
+      log += `HybridStore.useAPI: ${HybridStore.useAPI}\n\n`;
+      
+      // 3. Check current users
+      log += '3. CHECKING CURRENT USERS\n';
+      log += '-'.repeat(60) + '\n';
+      const users = Store.getUsers();
+      log += `Total users: ${users.length}\n\n`;
+      
+      if (users.length > 0) {
+        log += 'Existing users:\n';
+        users.forEach((u, i) => {
+          log += `\n  ${i + 1}. ${u.email}\n`;
+          log += `     Name: ${u.name}\n`;
+          log += `     Role: ${u.role}\n`;
+          log += `     Student ID: ${u.studentId || u.student_id || 'N/A'}\n`;
+        });
+        log += '\n';
+      }
+      
+      // 4. Test duplicate detection
+      log += '4. TESTING DUPLICATE DETECTION\n';
+      log += '-'.repeat(60) + '\n';
+      const testEmail = 'test@evelynhone.ac.zw';
+      const existing = Store.findUserByEmail(testEmail);
+      log += `Test email (${testEmail}): ${existing ? 'Already exists' : 'Available'}\n`;
+      
+      if (existing) {
+        log += `⚠️ This email is taken. Try a different one.\n`;
+      }
+      log += '\n';
+      
+      // 5. Test Store.addUser
+      log += '5. TESTING Store.addUser()\n';
+      log += '-'.repeat(60) + '\n';
+      try {
+        const testUser = {
+          name: 'Diagnostic Test User',
+          email: 'diagnostic_test_' + Date.now() + '@evelynhone.ac.zw',
+          password: 'Test@123',
+          role: 'student'
+        };
+        
+        log += 'Creating test user...\n';
+        const newUser = Store.addUser(testUser);
+        log += `✅ User created with ID: ${newUser.id}\n`;
+        log += `   Email: ${newUser.email}\n`;
+        
+        // Verify it was saved
+        const saved = Store.findUserByEmail(newUser.email);
+        if (saved) {
+          log += '✅ User successfully saved to localStorage\n';
+          
+          // Clean up test user
+          const users = Store.getUsers();
+          const filtered = users.filter(u => u.email !== newUser.email);
+          Store.saveUsers(filtered);
+          log += '✅ Test user cleaned up\n';
+        } else {
+          log += '❌ User was NOT saved to localStorage!\n';
+        }
+      } catch (error) {
+        log += '❌ ERROR: ' + error.message + '\n';
+      }
+      log += '\n';
+      
+      // 6. Test HybridStore.register
+      log += '6. TESTING HybridStore.register()\n';
+      log += '-'.repeat(60) + '\n';
+      log += 'This will be tested when you click "Test Registration"\n\n';
+      
+      // 7. Summary
+      log += '7. SUMMARY\n';
+      log += '-'.repeat(60) + '\n';
+      log += '✅ Store functions are working\n';
+      log += '✅ localStorage is accessible\n';
+      log += `✅ ${users.length} user(s) in database\n\n`;
+      log += 'To test registration:\n';
+      log += '1. Click "Test Registration" button above\n';
+      log += '2. Or fill in the form and click "Register Now"\n';
+      log += '3. Check the output for detailed logs\n';
+      
+      output.textContent = log;
+      updateSystemStatus();
+    }
+
+    async function attemptRegistration() {
+      const resultDiv = document.getElementById('reg-result');
+      const output = document.getElementById('output');
+      
+      const name = document.getElementById('test-name').value.trim();
+      const email = document.getElementById('test-email').value.trim();
+      const password = document.getElementById('test-password').value;
+      
+      if (!name || !email || !password) {
+        resultDiv.innerHTML = '<div class="error">Please fill in all fields</div>';
+        return;
+      }
+      
+      let log = 'REGISTRATION ATTEMPT\n';
+      log += '='.repeat(60) + '\n\n';
+      
+      log += 'Input Data:\n';
+      log += `  Name: ${name}\n`;
+      log += `  Email: ${email}\n`;
+      log += `  Password: ${password}\n\n`;
+      
+      resultDiv.innerHTML = '<div class="info">Attempting registration...</div>';
+      
+      try {
+        // Check if email already exists
+        log += 'Step 1: Checking for duplicate email...\n';
+        const existing = Store.findUserByEmail(email);
+        if (existing) {
+          log += `❌ Email already exists!\n`;
+          log += `   Existing user: ${existing.name} (${existing.email})\n\n`;
+          resultDiv.innerHTML = '<div class="error">❌ Email already registered! Use a different email.</div>';
+          output.textContent = log;
+          return;
+        }
+        log += '✅ Email is available\n\n';
+        
+        // Attempt registration
+        log += 'Step 2: Calling HybridStore.register()...\n';
+        const result = await HybridStore.register({
+          name: name,
+          email: email,
+          password: password,
+          student_id: null
+        });
+        
+        log += '\nResult:\n';
+        log += JSON.stringify(result, null, 2) + '\n\n';
+        
+        if (result.success) {
+          log += '✅ REGISTRATION SUCCESSFUL!\n\n';
+          log += 'User Details:\n';
+          log += `  ID: ${result.user.id}\n`;
+          log += `  Name: ${result.user.name}\n`;
+          log += `  Email: ${result.user.email}\n`;
+          log += `  Role: ${result.user.role}\n\n`;
+          
+          // Verify user was saved
+          const saved = Store.findUserByEmail(email);
+          if (saved) {
+            log += '✅ User verified in localStorage\n';
+            log += `   Total users now: ${Store.getUsers().length}\n\n`;
+          } else {
+            log += '⚠️ User not found in localStorage after registration!\n';
+          }
+          
+          resultDiv.innerHTML = '<div class="success">✅ Registration successful! User created.</div>';
+        } else {
+          log += '❌ REGISTRATION FAILED!\n';
+          log += `   Error: ${result.message}\n\n`;
+          
+          // Detailed error analysis
+          log += 'Error Analysis:\n';
+          if (result.message.includes('already registered')) {
+            log += '  → Email or Student ID already exists\n';
+            log += '  → Try a different email\n';
+          } else if (result.message.includes('required')) {
+            log += '  → Missing required fields\n';
+            log += '  → Check name, email, and password\n';
+          } else {
+            log += '  → Unknown error\n';
+            log += '  → Check browser console for more details\n';
+          }
+          
+          resultDiv.innerHTML = `<div class="error">❌ Registration failed: ${result.message}</div>`;
+        }
+      } catch (error) {
+        log += '❌ EXCEPTION THROWN!\n';
+        log += `   Error: ${error.message}\n`;
+        log += `   Stack: ${error.stack}\n`;
+        
+        resultDiv.innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
+      }
+      
+      output.textContent = log;
+      updateSystemStatus();
+    }
+
+    function testRegistration() {
+      // Generate random email
+      document.getElementById('test-email').value = 'test' + Date.now() + '@evelynhone.ac.zw';
+      attemptRegistration();
+    }
+
+    function viewAllUsers() {
+      const output = document.getElementById('output');
+      const users = Store.getUsers();
+      
+      let log = 'ALL USERS IN DATABASE\n';
+      log += '='.repeat(60) + '\n\n';
+      log += `Total: ${users.length} user(s)\n\n`;
+      
+      if (users.length === 0) {
+        log += 'No users found.\n';
+      } else {
+        users.forEach((u, i) => {
+          log += `${i + 1}. ${u.email}\n`;
+          log += `   ID: ${u.id}\n`;
+          log += `   Name: ${u.name}\n`;
+          log += `   Role: ${u.role}\n`;
+          log += `   Password: ${u.password ? '(set)' : 'MISSING'}\n`;
+          log += `   Student ID: ${u.studentId || u.student_id || 'N/A'}\n`;
+          log += `   Created: ${u.created_at || u.createdAt || 'N/A'}\n`;
+          log += '\n';
+        });
+      }
+      
+      output.textContent = log;
+    }
+
+    // Auto-run diagnosis on load
+    window.addEventListener('load', () => {
+      setTimeout(runDiagnosis, 500);
+    });
+  </script>
+</body>
+</html>

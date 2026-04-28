@@ -1,0 +1,511 @@
+/* ========================================
+   HONEHUBE HOME PAGE STYLES
+   Professional, Static Design (No Animations)
+   ======================================== */
+
+/* ========== PROFESSIONAL HERO SECTION ========== */
+.home-hero-wrapper {
+  position: relative;
+  overflow: hidden;
+  min-height: 600px;
+}
+
+/* Background image layer */
+.home-hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.home-hero-background img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Gradient overlay */
+.home-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.7) 0%, rgba(118, 75, 162, 0.7) 100%);
+  z-index: 2;
+}
+
+/* Hero content */
+.home-hero {
+  position: relative;
+  z-index: 3;
+}
+
+/* ========== PROFESSIONAL STATS BAR ========== */
+.home-stats {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.home-stat-value {
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  color: #ffffff;
+}
+
+/* ========== PROFESSIONAL CATEGORY CARDS ========== */
+.home-cat-card {
+  border: 1px solid #e0e0e0;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  background: #ffffff;
+}
+
+.home-cat-card:hover {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+}
+
+.home-cat-card span {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.home-cat-card p {
+  margin: 0;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* ========== PROFESSIONAL PRODUCT CARDS ========== */
+.listing-card {
+  border: 1px solid #e0e0e0;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+
+.listing-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #667eea;
+}
+
+.listing-img {
+  position: relative;
+  overflow: hidden;
+  background: #f5f5f5;
+  height: 200px;
+}
+
+.listing-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.listing-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  background: #f5f5f5;
+}
+
+.listing-info {
+  padding: 15px;
+}
+
+.listing-price {
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  color: #667eea !important;
+  margin: 10px 0;
+}
+
+.listing-category {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.listing-seller {
+  color: #999;
+  font-size: 0.85rem;
+  margin: 5px 0;
+}
+
+/* ========== PROFESSIONAL HOW IT WORKS ========== */
+.home-step {
+  padding: 20px;
+  text-align: center;
+}
+
+.home-step:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.home-step-icon {
+  font-size: 3rem !important;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.home-step h3 {
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 10px 0;
+}
+
+.home-step p {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* ========== PROFESSIONAL CTA SECTION ========== */
+.home-cta {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60px 20px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.home-cta h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.home-cta p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.95;
+}
+
+/* ========== PROFESSIONAL BUTTONS ========== */
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+  background: #667eea;
+  color: #ffffff;
+}
+
+.btn-outline-white {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+.btn-lg {
+  padding: 15px 30px;
+  font-size: 1.1rem;
+}
+
+/* ========== SECTION STYLING ========== */
+.home-section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.home-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.home-section-header h2 {
+  position: relative;
+  display: inline-block;
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 2rem;
+}
+
+.home-section-header h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 2px;
+}
+
+.home-see-all {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.home-see-all:hover {
+  text-decoration: underline;
+}
+
+/* ========== HERO CONTENT ========== */
+.home-hero-content {
+  max-width: 600px;
+  color: #ffffff;
+  padding: 80px 20px;
+}
+
+.home-hero-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.home-hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin: 20px 0;
+  line-height: 1.2;
+}
+
+.home-hero-content p {
+  font-size: 1.2rem;
+  margin: 20px 0;
+  line-height: 1.6;
+  opacity: 0.95;
+}
+
+.home-hero-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.home-hero-visual {
+  display: none; /* Hidden on mobile, can be shown on desktop */
+}
+
+.hero-laptop {
+  font-size: 10rem;
+}
+
+/* ========== CATEGORIES GRID ========== */
+.home-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* ========== PRODUCTS GRID ========== */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+/* ========== HOW IT WORKS ========== */
+.home-how {
+  background: #f8f9ff;
+}
+
+.home-how h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 50px;
+}
+
+.home-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.home-step-arrow {
+  font-size: 2rem;
+  color: #667eea;
+  font-weight: bold;
+}
+
+/* ========== FOOTER ========== */
+.home-footer {
+  background: #2c3e50;
+  color: #ffffff;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.home-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.home-footer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.home-footer-brand span {
+  font-size: 2rem;
+}
+
+.home-footer-brand strong {
+  display: block;
+  font-size: 1.5rem;
+}
+
+.home-footer-brand small {
+  display: block;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.home-footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.home-footer-links a {
+  color: #ffffff;
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.home-footer-links a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.home-footer-copy {
+  margin-top: 20px;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+/* ========== BADGE STYLING ========== */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-new {
+  background: #d4edda;
+  color: #155724;
+}
+
+.badge-available {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+  .home-hero-wrapper {
+    min-height: 500px;
+  }
+  
+  .home-hero-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .home-hero-content p {
+    font-size: 1rem;
+  }
+  
+  .home-stat-value {
+    font-size: 2rem !important;
+  }
+  
+  .home-step-icon {
+    font-size: 2.5rem !important;
+  }
+  
+  .home-step-arrow {
+    display: none;
+  }
+  
+  .home-categories {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+  
+  .listings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  
+  .home-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .home-hero-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .home-hero-visual {
+    display: block;
+  }
+}
+
+/* ========== EMPTY STATE ========== */
+.empty-msg {
+  text-align: center;
+  color: #999;
+  padding: 40px;
+  font-size: 1.1rem;
+}
