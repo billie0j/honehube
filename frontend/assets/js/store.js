@@ -159,19 +159,20 @@ const Store = {
 
   getDefaultAccessories() {
     return [
-      { id: 1, item_name: 'Dell Latitude E7450', category: 'Laptops', description: 'Intel Core i5, 8GB RAM, 256GB SSD, 14" display', original_price: 4500.00, image: null, status: 'available', posted_by: 1 },
-      { id: 2, item_name: 'Lenovo ThinkPad T480', category: 'Laptops', description: 'Intel Core i7, 16GB RAM, 512GB SSD, excellent condition', original_price: 6500.00, image: null, status: 'available', posted_by: 1 },
+      { id: 1, item_name: 'Dell Latitude E7450', category: 'Laptops', description: 'Intel Core i5, 8GB RAM, 256GB SSD, 14" display', original_price: 4500.00, image: '../assets/images/lap1.png', status: 'available', posted_by: 1 },
+      { id: 2, item_name: 'Lenovo ThinkPad T480', category: 'Laptops', description: 'Intel Core i7, 16GB RAM, 512GB SSD, excellent condition', original_price: 6500.00, image: '../assets/images/lenove1.png', status: 'available', posted_by: 1 },
       { id: 3, item_name: 'HP EliteBook 840 G5', category: 'Laptops', description: 'Intel Core i5 8th Gen, 8GB DDR4 RAM, 256GB SSD, 14" FHD Display, Excellent condition', original_price: 5200.00, image: '../assets/images/lap1.png', status: 'available', posted_by: 1 },
       { id: 4, item_name: 'Dell Latitude 7490', category: 'Laptops', description: 'Intel Core i5 8th Gen, 8GB DDR4 RAM, 256GB SSD, 14" FHD Display, Business Class', original_price: 5400.00, image: '../assets/images/lap2.png', status: 'available', posted_by: 1 },
-      { id: 5, item_name: 'Kingston 16GB DDR4 RAM', category: 'RAM', description: 'Brand new 16GB DDR4 2666MHz memory module', original_price: 750.00, image: null, status: 'available', posted_by: 1 },
+      { id: 5, item_name: 'Kingston 16GB DDR4 RAM', category: 'RAM', description: 'Brand new 16GB DDR4 2666MHz memory module', original_price: 750.00, image: '../assets/images/ram.png', status: 'available', posted_by: 1 },
       { id: 6, item_name: 'RAM Module', category: 'RAM', description: 'High-performance RAM module, DDR4, all sizes available (4GB-32GB), multiple speeds', original_price: 650.00, image: '../assets/images/ram.png', status: 'available', posted_by: 1 },
-      { id: 7, item_name: 'Samsung 500GB SSD', category: 'Storage', description: 'High-speed SATA SSD, barely used', original_price: 600.00, image: null, status: 'available', posted_by: 1 },
+      { id: 7, item_name: 'Samsung 500GB SSD', category: 'Storage', description: 'High-speed SATA SSD, barely used', original_price: 600.00, image: '../assets/images/hard.png', status: 'available', posted_by: 1 },
       { id: 8, item_name: 'External Hard Drive', category: 'Storage', description: 'Portable external hard drive, USB 3.0, multiple capacities available', original_price: 850.00, image: '../assets/images/hard.png', status: 'available', posted_by: 1 },
-      { id: 9, item_name: 'HP Laptop Charger 65W', category: 'Chargers', description: 'Compatible with HP laptops, original charger', original_price: 250.00, image: null, status: 'available', posted_by: 1 },
+      { id: 9, item_name: 'HP Laptop Charger 65W', category: 'Chargers', description: 'Compatible with HP laptops, original charger', original_price: 250.00, image: '../assets/images/adapter.png', status: 'available', posted_by: 1 },
       { id: 10, item_name: 'Wireless Charger', category: 'Chargers', description: 'Fast wireless charging pad, Qi-certified, 15W output', original_price: 350.00, image: '../assets/images/wireless.png', status: 'available', posted_by: 1 },
       { id: 11, item_name: 'iPhone 15', category: 'Phones', description: 'Brand new Apple iPhone 15, 128GB, A16 Bionic chip', original_price: 12500.00, image: '../assets/images/iphone 15.webp', status: 'available', posted_by: 1 },
       { id: 12, item_name: 'iPhone X', category: 'Phones', description: 'Apple iPhone X, 64GB, Face ID, dual cameras, excellent condition', original_price: 5800.00, image: '../assets/images/10.png', status: 'available', posted_by: 1 },
       { id: 13, item_name: 'Samsung Galaxy A07', category: 'Phones', description: 'Samsung Galaxy A07, 64GB storage, 4GB RAM', original_price: 1800.00, image: '../assets/images/samsung A07.jpg', status: 'available', posted_by: 1 },
+      { id: 25, item_name: 'Samsung Galaxy S20', category: 'Phones', description: 'Samsung Galaxy S20, 128GB, Phantom Gray, Excellent Condition, Triple Camera System', original_price: 4500.00, image: '../assets/images/galaxy20.png', status: 'available', posted_by: 1 },
       { id: 14, item_name: 'Phone Stand', category: 'Accessories', description: 'Adjustable aluminum phone stand, compatible with all smartphones', original_price: 150.00, image: '../assets/images/stand.png', status: 'available', posted_by: 1 },
       { id: 15, item_name: 'Adjustable Laptop Stand', category: 'Accessories', description: 'Ergonomic aluminum laptop stand, adjustable height and angle', original_price: 180.00, image: '../assets/images/stand1.png', status: 'available', posted_by: 1 },
       { id: 16, item_name: 'Laptop Cooling Pad', category: 'Accessories', description: 'RGB laptop cooling pad with 6 quiet fans, adjustable height', original_price: 280.00, image: '../assets/images/coolinpad.png', status: 'available', posted_by: 1 },
@@ -182,7 +183,7 @@ const Store = {
       { id: 21, item_name: 'Cabled Earbuds', category: 'Accessories', description: 'Premium cabled earbuds with superior sound quality, noise cancellation', original_price: 180.00, image: '../assets/images/bug1.png', status: 'available', posted_by: 1 },
       { id: 22, item_name: 'Power Cable', category: 'Cables', description: 'Universal power cable, 1.5 meters, heavy duty construction', original_price: 80.00, image: '../assets/images/power.png', status: 'available', posted_by: 1 },
       { id: 23, item_name: 'Multi Adapter', category: 'Adapters', description: 'Universal multi adapter with 4 USB ports and 3 AC outlets', original_price: 320.00, image: '../assets/images/adapter.png', status: 'available', posted_by: 1 },
-      { id: 24, item_name: 'Triple Monitor Setup', category: 'Monitors', description: 'Professional triple monitor setup, 3x 24-inch Full HD displays', original_price: 8500.00, image: '../assets/images/tri monitor.png', status: 'available', posted_by: 1 }
+      { id: 24, item_name: 'Triple Monitor Setup', category: 'Monitors', description: 'Professional triple monitor setup, 3x 24-inch Full HD displays', original_price: 8500.00, image: '../assets/images/tri%20monitor.png', status: 'available', posted_by: 1 }
     ];
   },
 

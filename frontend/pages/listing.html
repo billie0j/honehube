@@ -65,7 +65,7 @@
         </div>
         <div class="detail-info">
           <div>
-            <span class="badge badge-new">${isAvailable ? 'Available' : 'Sold'}</span>
+            <span class="badge badge-${l.status}">${l.status}</span>
           </div>
           <h1>${l.item_name}</h1>
           <p class="detail-price">K${parseFloat(l.original_price).toFixed(2)}</p>

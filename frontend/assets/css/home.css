@@ -438,6 +438,11 @@
   color: #0c5460;
 }
 
+.badge-sold {
+  background: #f8d7da;
+  color: #721c24;
+}
+
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
   .home-hero-wrapper {

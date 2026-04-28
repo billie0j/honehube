@@ -32,9 +32,6 @@
         <a href="register.html" class="btn btn-outline-white btn-lg">Join Free</a>
       </div>
     </div>
-    <div class="home-hero-visual">
-      <div class="hero-laptop">💻</div>
-    </div>
   </section>
 </div>
 
@@ -158,13 +155,14 @@
 
   // Helper function to create product card HTML
   function createProductCard(item) {
+    const isSold = item.status === 'sold';
     return `
-      <a href="listing.html?id=${item.id}" class="listing-card card">
+      <a href="listing.html?id=${item.id}" class="listing-card card ${isSold ? 'sold-out' : ''}">
         <div class="listing-img">
           ${item.image ? `<img src="${item.image}" alt="${item.item_name}" onerror="this.parentElement.innerHTML='<div class=\\'listing-img-placeholder\\'>💻</div>'" />` : `<div class="listing-img-placeholder">💻</div>`}
         </div>
         <div class="listing-info">
-          <span class="badge badge-new">Available</span>
+          <span class="badge badge-${item.status}">${item.status}</span>
           <h3>${item.item_name}</h3>
           <p class="listing-category">${item.category}</p>
           <p class="listing-price">K${parseFloat(item.original_price).toFixed(2)}</p>
@@ -174,10 +172,8 @@
   }
 
   // Display ALL products from the system
-  const availableProducts = allProducts.filter(a => a.status === 'available');
-  
-  document.getElementById('all-products').innerHTML = availableProducts.length > 0
-    ? availableProducts.map(item => createProductCard(item)).join('')
+  document.getElementById('all-products').innerHTML = allProducts.length > 0
+    ? allProducts.map(item => createProductCard(item)).join('')
     : '<p style="text-align: center; color: #999; padding: 40px;">No products available at the moment</p>';
 </script>
 </body>
