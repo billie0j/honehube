@@ -1,5 +1,5 @@
 -- Honehube Database Schema
--- MySQL Database for Evlyne Hone College E-commerce Platform
+-- MySQL Database for Evelyn Hone College E-commerce Platform
 
 -- Create database
 CREATE DATABASE IF NOT EXISTS honehube CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

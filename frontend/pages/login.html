@@ -73,7 +73,7 @@
 <div class="login-page-wrapper">
   <!-- Background Image -->
   <div class="background-image">
-    <img src="../assets/images/building.png" alt="Evlyne Hone College Building" />
+    <img src="../assets/images/building.png" alt="Evelyn Hone College Building" />
   </div>
   
   <!-- Dark overlay for better text readability -->
@@ -85,11 +85,11 @@
     <div class="auth-header">
       <div class="auth-icon">💻</div>
       <h2>Welcome back</h2>
-      <p>Sign in to Honehube — Evlyne Hone College</p>
+      <p>Sign in to Honehube — Evelyn Hone College</p>
     </div>
 
     <div class="login-hint">
-      Login with your <strong>college email</strong> (e.g. <strong>b123456@evlynehone.ac.zw</strong>),
+      Login with your <strong>college email</strong> (e.g. <strong>b123456@evelynhone.ac.zw</strong>),
       your <strong>student ID</strong>, or any <strong>email</strong> (e.g. <strong>enock@gmail.com</strong>).
     </div>
 
@@ -105,7 +105,7 @@
           type="text" 
           id="email" 
           name="email"
-          placeholder="b123456@evlynehone.ac.zw or B123456" 
+          placeholder="b123456@evelynhone.ac.zw or B123456" 
           required 
           autocomplete="username"
           minlength="3"
@@ -161,7 +161,7 @@
 
 <div class="hero" style="display: none;">
   <h1>Honehube Laptop Marketplace</h1>
-  <p>Buy and sell laptops and laptop parts within Evlyne Hone College campus</p>
+  <p>Buy and sell laptops and laptop parts within Evelyn Hone College campus</p>
   <div class="search-bar">
     <input type="text" id="search-input" placeholder="Search laptops, RAM, SSD, chargers..." maxlength="100" />
     <button class="btn btn-primary" onclick="loadListings()">Search</button>
@@ -308,7 +308,7 @@
     document.getElementById('csrf_token').value = newToken;
 
     // if input looks like a student ID (no @), convert to email
-    const emailInput = rawInput.includes('@') ? rawInput : `${rawInput.toLowerCase()}@evlynehone.ac.zw`;
+    const emailInput = rawInput.includes('@') ? rawInput : `${rawInput.toLowerCase()}@evelynhone.ac.zw`;
 
     // Show loading state
     alertEl.innerHTML = '<div class="alert alert-info">Logging in...</div>';

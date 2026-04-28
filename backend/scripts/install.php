@@ -135,7 +135,7 @@ $dbName = 'honehube';
 <body>
     <div class="container">
         <h1>🚀 Honehube Database Installation</h1>
-        <p class="subtitle">Evlyne Hone College E-commerce Platform</p>
+        <p class="subtitle">Evelyn Hone College E-commerce Platform</p>
 
         <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

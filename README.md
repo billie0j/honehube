@@ -1,4 +1,4 @@
-# 🎓 HoneHube - Evlyne Hone College Marketplace
+# 🎓 HoneHube - Evelyn Hone College Marketplace
 
 A secure web-based marketplace system where admins post accessories (laptops, chargers, phones, bags, earphones, books, etc.) and students can browse, request to buy, and negotiate prices.
 
@@ -357,13 +357,13 @@ This is a college project. For improvements:
 
 ## 📝 License
 
-This project is created for Evlyne Hone College. All rights reserved.
+This project is created for Evelyn Hone College. All rights reserved.
 
 ---
 
 ## 👥 Credits
 
-**Developed for:** Evlyne Hone College  
+**Developed for:** Evelyn Hone College  
 **Version:** 1.0  
 **Release Date:** April 26, 2026  
 **Status:** Production Ready ✅
@@ -397,4 +397,4 @@ Potential features for version 2.0:
 
 ---
 
-**Made with ❤️ for Evlyne Hone College Students**
+**Made with ❤️ for Evelyn Hone College Students**
