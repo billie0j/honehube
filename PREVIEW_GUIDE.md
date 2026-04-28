@@ -7,22 +7,24 @@
 
 ## 🚀 Quick Access URLs
 
+### Quick Access URLs
+
 ### Main Pages:
-- **Landing Page:** http://localhost/honehube/
-- **Browse Items:** http://localhost/honehube/frontend/pages/index.html
-- **Login:** http://localhost/honehube/frontend/pages/login.html
-- **Register:** http://localhost/honehube/frontend/pages/register.html
+- **Landing Page:** http://localhost:8080/honehube/
+- **Browse Items:** http://localhost:8080/honehube/frontend/pages/index.html
+- **Login:** http://localhost:8080/honehube/frontend/pages/login.html
+- **Register:** http://localhost:8080/honehube/frontend/pages/register.html
 
 ### Dashboards (with NEW Collapsing Sidebars):
-- **Admin Dashboard:** http://localhost/honehube/frontend/pages/admin-dashboard.html
-- **Student Dashboard:** http://localhost/honehube/frontend/pages/dashboard.html
+- **Admin Dashboard:** http://localhost:8080/honehube/frontend/pages/admin-dashboard.html
+- **Student Dashboard:** http://localhost:8080/honehube/frontend/pages/dashboard.html
 
 ---
 
 ## 🎯 Testing the New Sidebar Feature
 
 ### Admin Dashboard:
-1. Open: http://localhost/honehube/frontend/pages/admin-dashboard.html
+1. Open: http://localhost:8080/honehube/frontend/pages/admin-dashboard.html
 2. Look for the **purple circular button (☰)** in the top-left
 3. Click it to open the sidebar
 4. Try clicking different menu items:
@@ -36,7 +38,7 @@
 7. Try on mobile view (resize browser to <768px)
 
 ### Student Dashboard:
-1. Open: http://localhost/honehube/frontend/pages/dashboard.html
+1. Open: http://localhost:8080/honehube/frontend/pages/dashboard.html
 2. Click the **purple circular button (☰)**
 3. Try the menu items:
    - 📊 Dashboard
@@ -51,17 +53,17 @@
 ## 🖼️ Image Verification
 
 ### Login Page:
-- URL: http://localhost/honehube/frontend/pages/login.html
+- URL: http://localhost:8080/honehube/frontend/pages/login.html
 - Check: **building.png** background image loads
 - Should see: Evlyne Hone College building as background
 
 ### Landing Page:
-- URL: http://localhost/honehube/
+- URL: http://localhost:8080/honehube/
 - Check: **landing.png** background image loads
 - Should see: Purple gradient overlay on landing image
 
 ### Product Images:
-- URL: http://localhost/honehube/frontend/pages/index.html
+- URL: http://localhost:8080/honehube/frontend/pages/index.html
 - Check: All 23 product images load correctly
 - Should see: Laptops, phones, accessories with images
 

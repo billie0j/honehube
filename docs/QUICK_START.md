@@ -12,13 +12,13 @@
 ### Step 2: Install Database (1 minute)
 
 1. Open your browser
-2. Go to: **http://localhost/honehube/install.php**
+2. Go to: **http://localhost:8080/honehube/install.php**
 3. Click the **"🚀 Install Database"** button
 4. Wait for success message (should see green checkmarks)
 
 ### Step 3: Test the System (1 minute)
 
-1. Go to: **http://localhost/honehube/login.html**
+1. Go to: **http://localhost:8080/honehube/login.html**
 2. Login with:
    - **Email:** admin@honehube.com
    - **Password:** Admin@123
@@ -64,7 +64,7 @@ The system automatically detects if the database is available:
 ### Check if XAMPP is running:
 ```powershell
 # Check Apache
-Test-NetConnection localhost -Port 80
+Test-NetConnection localhost -Port 8080
 
 # Check MySQL
 Test-NetConnection localhost -Port 3306
@@ -72,12 +72,12 @@ Test-NetConnection localhost -Port 3306
 
 ### Access phpMyAdmin:
 ```
-http://localhost/phpmyadmin
+http://localhost:8080/phpmyadmin
 ```
 
 ### Access your site:
 ```
-http://localhost/honehube/
+http://localhost:8080/honehube/
 ```
 
 ---

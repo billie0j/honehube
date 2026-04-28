@@ -101,14 +101,14 @@ See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for detailed structure.
    ```
 
 4. **Run Installation Wizard**
-   - Open browser: `http://localhost/honehube/backend/scripts/install.php`
+   - Open browser: `http://localhost:8080/honehube/backend/scripts/install.php`
    - Click "Install Database"
    - Wait for success message
 
 5. **Access Application**
-   - Landing page: `http://localhost/honehube/`
-   - Browse items: `http://localhost/honehube/frontend/pages/index.html`
-   - Login: `http://localhost/honehube/frontend/pages/login.html`
+   - Landing page: `http://localhost:8080/honehube/`
+   - Browse items: `http://localhost:8080/honehube/frontend/pages/index.html`
+   - Login: `http://localhost:8080/honehube/frontend/pages/login.html`
 
 ### Default Admin Credentials
 ```

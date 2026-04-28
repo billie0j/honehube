@@ -25,7 +25,7 @@ define('MAX_LOGIN_ATTEMPTS', 5);
 define('LOGIN_ATTEMPT_WINDOW', 900); // 15 minutes
 
 // CORS settings (for API)
-define('ALLOWED_ORIGINS', ['http://localhost', 'https://billie0j.github.io']);
+define('ALLOWED_ORIGINS', ['http://localhost:8080', 'http://localhost', 'https://billie0j.github.io']);
 
 // Error reporting (disable in production)
 error_reporting(E_ALL);
