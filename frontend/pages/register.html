@@ -209,10 +209,6 @@
   let apiReady = false;
   HybridStore.init().then(ready => {
     apiReady = ready;
-    if (apiReady) {
-      // Update CSRF token from API
-      document.getElementById('csrf_token').value = HybridStore.getCSRFToken();
-    }
   });
 
   // Generate CSRF Token
@@ -340,12 +336,23 @@
   function handleRegister(e) {
     e.preventDefault();
     const alertEl = document.getElementById('alert');
+    const csrfTokenInput = document.getElementById('csrf_token').value;
     alertEl.innerHTML = '';
 
     // Validate reCAPTCHA
     const recaptchaResponse = grecaptcha.getResponse();
     if (!recaptchaResponse) {
-      alertEl.innerHTML = '<div class="alert alert-error">Please complete the reCAPTCHA verification.</div>';
+      alertEl.innerHTML = '<div class="alert alert-error">Please complete the verification.</div>';
+      return;
+    }
+
+    // Validate CSRF Token (generic error message for security)
+    if (!validateCSRFToken(csrfTokenInput)) {
+      alertEl.innerHTML = '<div class="alert alert-error">Unable to process request. Please try again.</div>';
+      // Regenerate token for next attempt
+      const newToken = generateCSRFToken();
+      document.getElementById('csrf_token').value = newToken;
+      grecaptcha.reset();
       return;
     }
 
@@ -401,14 +408,19 @@
           location.href = 'index.html';
         }, 1000);
       } else {
-        alertEl.innerHTML = '<div class="alert alert-error">' + (result.message || 'Unable to create account. Please try a different email.') + '</div>';
-        // Reset reCAPTCHA
+        // Generic error message for security
+        alertEl.innerHTML = '<div class="alert alert-error">Unable to create account. Please try again.</div>';
+        // Reset reCAPTCHA and regenerate CSRF token
         grecaptcha.reset();
+        const newToken = generateCSRFToken();
+        document.getElementById('csrf_token').value = newToken;
       }
     }).catch(error => {
       console.error('Registration error:', error);
-      alertEl.innerHTML = '<div class="alert alert-error">An error occurred. Please try again.</div>';
+      alertEl.innerHTML = '<div class="alert alert-error">Unable to process request. Please try again.</div>';
       grecaptcha.reset();
+      const newToken = generateCSRFToken();
+      document.getElementById('csrf_token').value = newToken;
     });
   }
 </script>
