@@ -39,20 +39,13 @@
   async function loadListing() {
     const page = document.getElementById('detail-content');
     
-    if (HybridStore.useAPI) {
-      const result = await API.getListing(listingId);
-      if (result.success) {
-        currentListing = result.listing;
-      } else {
-        page.innerHTML = '<p class="empty-msg">Item not found.</p>';
-        return;
-      }
-    } else {
-      currentListing = Store.getListing(listingId);
-      if (!currentListing) {
-        page.innerHTML = '<p class="empty-msg">Item not found.</p>';
-        return;
-      }
+    // Get accessories (products) from Store
+    const accessories = Store.getAccessories();
+    currentListing = accessories.find(a => a.id == listingId);
+    
+    if (!currentListing) {
+      page.innerHTML = '<p class="empty-msg">Item not found.</p>';
+      return;
     }
 
     displayListing();
@@ -62,21 +55,20 @@
     const l = currentListing;
     const page = document.getElementById('detail-content');
 
-    const isAvailable = l.status === 'active';
+    const isAvailable = l.status === 'available';
     const canPurchase = currentUser && currentUser.role !== 'admin' && isAvailable;
 
     page.innerHTML = `
       <div class="detail-container">
         <div class="detail-img">
-          ${l.image ? `<img src="${l.image}" alt="${l.title}" onerror="this.parentElement.innerHTML='<div class=\\'detail-img-placeholder\\'>📱</div>'" />` : `<div class="detail-img-placeholder">📱</div>`}
+          ${l.image ? `<img src="${l.image}" alt="${l.item_name}" onerror="this.parentElement.innerHTML='<div class=\\'detail-img-placeholder\\'>💻</div>'" />` : `<div class="detail-img-placeholder">💻</div>`}
         </div>
         <div class="detail-info">
           <div>
-            <span class="badge badge-${l.condition_type}">${l.condition_type}</span>
-            ${!isAvailable ? `<span class="badge badge-sold" style="margin-left:8px">${l.status}</span>` : ''}
+            <span class="badge badge-new">${isAvailable ? 'Available' : 'Sold'}</span>
           </div>
-          <h1>${l.title}</h1>
-          <p class="detail-price">K${parseFloat(l.price).toFixed(2)}</p>
+          <h1>${l.item_name}</h1>
+          <p class="detail-price">K${parseFloat(l.original_price).toFixed(2)}</p>
           <p class="detail-category">📦 Category: ${l.category}</p>
           
           ${l.description ? `
@@ -87,7 +79,7 @@
           ` : ''}
           
           <div class="seller-box">
-            <strong>👤 Seller:</strong> ${l.seller_name || 'Admin'}
+            <strong>👤 Seller:</strong> Admin
           </div>
 
           ${!isAvailable ? `
@@ -113,7 +105,7 @@
               <div class="form-group">
                 <label>Your Offer Price (K) - Optional</label>
                 <input type="number" id="offered-price" min="0.01" step="0.01" placeholder="Leave empty to buy at original price" />
-                <small>Original price: K${parseFloat(l.price).toFixed(2)}. You can suggest a lower price for negotiation.</small>
+                <small>Original price: K${parseFloat(l.original_price).toFixed(2)}. You can suggest a lower price for negotiation.</small>
               </div>
 
               <div id="price-comparison" style="display: none;"></div>
@@ -156,7 +148,7 @@
 
   function updatePriceComparison() {
     const offeredPrice = parseFloat(document.getElementById('offered-price').value);
-    const originalPrice = parseFloat(currentListing.price);
+    const originalPrice = parseFloat(currentListing.original_price);
     const comparisonDiv = document.getElementById('price-comparison');
 
     if (offeredPrice && offeredPrice > 0 && offeredPrice < originalPrice) {
@@ -201,27 +193,29 @@
       return;
     }
 
-    if (offeredPrice && parseFloat(offeredPrice) >= parseFloat(currentListing.price)) {
+    if (offeredPrice && parseFloat(offeredPrice) >= parseFloat(currentListing.original_price)) {
       alertEl.innerHTML = '<div class="alert alert-error">Offered price must be less than the original price.</div>';
       return;
     }
 
     // Prepare request data
     const requestData = {
-      listing_id: listingId,
-      message: message
+      item_id: listingId,
+      item_name: currentListing.item_name,
+      original_price: currentListing.original_price,
+      offered_price: offeredPrice ? parseFloat(offeredPrice) : null,
+      message: message || `I'm interested in purchasing ${currentListing.item_name}`,
+      student_id: currentUser.id,
+      status: 'pending',
+      created_at: new Date().toISOString()
     };
 
-    if (offeredPrice) {
-      requestData.offered_price = parseFloat(offeredPrice);
-    }
-
-    // Send request
+    // Send request using Store
     alertEl.innerHTML = '<div class="alert alert-info">Sending request...</div>';
 
-    const result = await API.createRequest(requestData);
-
-    if (result.success) {
+    try {
+      Store.addPurchaseRequest(requestData);
+      
       alertEl.innerHTML = `
         <div class="alert alert-success">
           <strong>✅ Purchase request sent successfully!</strong><br>
@@ -235,8 +229,8 @@
       document.getElementById('request-message').value = '';
       document.getElementById('agree-terms').checked = false;
       document.getElementById('price-comparison').style.display = 'none';
-    } else {
-      alertEl.innerHTML = `<div class="alert alert-error"><strong>Error:</strong> ${result.message || 'Failed to send request. Please try again.'}</div>`;
+    } catch (error) {
+      alertEl.innerHTML = `<div class="alert alert-error"><strong>Error:</strong> Failed to send request. Please try again.</div>`;
     }
   }
 
@@ -321,17 +315,22 @@
     // Prepare complaint data
     const complaintData = {
       item_id: listingId,
+      item_name: currentListing.item_name,
       complaint_type: complaintType,
       subject: subject,
-      description: description
+      description: description,
+      user_id: currentUser.id,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     // Send complaint
     alertEl.innerHTML = '<div class="alert alert-info">Submitting complaint...</div>';
 
-    const result = await API.submitComplaint(complaintData);
-
-    if (result.success) {
+    try {
+      Store.addComplaint(complaintData);
+      
       alertEl.innerHTML = `
         <div class="alert alert-success">
           <strong>✅ Complaint submitted successfully!</strong><br>
@@ -349,8 +348,8 @@
       setTimeout(() => {
         closeComplaintModal();
       }, 3000);
-    } else {
-      alertEl.innerHTML = `<div class="alert alert-error"><strong>Error:</strong> ${result.message || 'Failed to submit complaint. Please try again.'}</div>`;
+    } catch (error) {
+      alertEl.innerHTML = `<div class="alert alert-error"><strong>Error:</strong> Failed to submit complaint. Please try again.</div>`;
     }
   }
 
