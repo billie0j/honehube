@@ -292,6 +292,7 @@
         document.getElementById('studentid-input').focus();
         return false;
       }
+      email = `${sid.toLowerCase()}@evelynhone.ac.zw`;
     } else {
       email = document.getElementById('gmail-input').value.trim();
       if (email === '') {
@@ -328,65 +329,30 @@
       return false;
     }
 
-    // If all validations pass, proceed to handleRegister
-    handleRegister(e);
-    return false; // Prevent default form submission
-  }
-
-  function handleRegister(e) {
-    e.preventDefault();
-    const alertEl = document.getElementById('alert');
-    const csrfTokenInput = document.getElementById('csrf_token').value;
-    alertEl.innerHTML = '';
-
     // Validate reCAPTCHA
     const recaptchaResponse = grecaptcha.getResponse();
     if (!recaptchaResponse) {
       alertEl.innerHTML = '<div class="alert alert-error">Please complete the verification.</div>';
-      return;
+      return false;
     }
 
-    // Validate CSRF Token (generic error message for security)
+    // Validate CSRF Token
+    const csrfTokenInput = document.getElementById('csrf_token').value;
     if (!validateCSRFToken(csrfTokenInput)) {
       alertEl.innerHTML = '<div class="alert alert-error">Unable to process request. Please try again.</div>';
-      // Regenerate token for next attempt
       const newToken = generateCSRFToken();
       document.getElementById('csrf_token').value = newToken;
       grecaptcha.reset();
-      return;
+      return false;
     }
 
-    const name     = document.getElementById('name').value.trim();
-    const password = document.getElementById('password').value;
+    // All validations passed, proceed with registration
+    handleRegister(name, email, password);
+    return false;
+  }
 
-    let email = '';
-    if (activeTab === 'email') {
-      email = document.getElementById('email-input').value.trim();
-      if (!email) { alertEl.innerHTML = '<div class="alert alert-error">Please enter all required fields.</div>'; return; }
-      if (!email.endsWith('@evelynhone.ac.zw')) {
-        alertEl.innerHTML = '<div class="alert alert-error">Invalid email format.</div>'; return;
-      }
-    } else if (activeTab === 'id') {
-      const sid = document.getElementById('studentid-input').value.trim();
-      if (!sid) { alertEl.innerHTML = '<div class="alert alert-error">Please enter all required fields.</div>'; return; }
-      email = `${sid.toLowerCase()}@evelynhone.ac.zw`;
-    } else {
-      email = document.getElementById('gmail-input').value.trim();
-      if (!email) { alertEl.innerHTML = '<div class="alert alert-error">Please enter all required fields.</div>'; return; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        alertEl.innerHTML = '<div class="alert alert-error">Invalid email format.</div>'; return;
-      }
-    }
-
-    if (password.length < 8) {
-      alertEl.innerHTML = '<div class="alert alert-error">Password does not meet security requirements.</div>'; return;
-    }
-
-    // Validate password strength
-    const passwordPattern = /(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,}/;
-    if (!passwordPattern.test(password)) {
-      alertEl.innerHTML = '<div class="alert alert-error">Password does not meet security requirements.</div>'; return;
-    }
+  function handleRegister(name, email, password) {
+    const alertEl = document.getElementById('alert');
 
     // Show loading state
     alertEl.innerHTML = '<div class="alert alert-info">Creating account...</div>';
