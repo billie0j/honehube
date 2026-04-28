@@ -340,7 +340,6 @@
   function handleRegister(e) {
     e.preventDefault();
     const alertEl = document.getElementById('alert');
-    const csrfTokenInput = document.getElementById('csrf_token').value;
     alertEl.innerHTML = '';
 
     // Validate reCAPTCHA
@@ -349,16 +348,6 @@
       alertEl.innerHTML = '<div class="alert alert-error">Please complete the reCAPTCHA verification.</div>';
       return;
     }
-
-    // Validate CSRF Token
-    if (!validateCSRFToken(csrfTokenInput)) {
-      alertEl.innerHTML = '<div class="alert alert-error">Invalid security token. Please refresh the page.</div>';
-      return;
-    }
-
-    // Regenerate CSRF token after validation
-    const newToken = generateCSRFToken();
-    document.getElementById('csrf_token').value = newToken;
 
     const name     = document.getElementById('name').value.trim();
     const password = document.getElementById('password').value;
