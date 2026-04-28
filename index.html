@@ -1,197 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HoneHube - Evelyne Hone College Marketplace</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
-                        url('frontend/assets/images/landing.png') center/cover no-repeat fixed;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 60px;
-            max-width: 800px;
-            width: 100%;
-            text-align: center;
-        }
-
-        h1 {
-            color: #667eea;
-            font-size: 3em;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 1.3em;
-            margin-bottom: 40px;
-        }
-
-        .description {
-            color: #555;
-            font-size: 1.1em;
-            line-height: 1.8;
-            margin-bottom: 50px;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 18px 40px;
-            font-size: 1.1em;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-secondary:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-3px);
-        }
-
-        .features {
-            margin-top: 60px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            text-align: left;
-        }
-
-        .feature {
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .feature h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-
-        .feature p {
-            color: #666;
-            font-size: 0.95em;
-            line-height: 1.6;
-        }
-
-        .footer {
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 2px solid #eee;
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 40px 30px;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-
-            .subtitle {
-                font-size: 1.1em;
-            }
-
-            .buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="0; url=frontend/pages/home.html">
+  <title>Honehube - Evelyn Hone College Laptop Marketplace</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+    }
+    .container {
+      padding: 40px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    a {
+      color: white;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎓 HoneHube</h1>
-        <p class="subtitle">Evelyn Hone College Marketplace</p>
-        
-        <p class="description">
-            Welcome to HoneHube - Your trusted marketplace for buying and selling 
-            laptops, chargers, phones, books, and other student accessories. 
-            Connect with fellow students and find great deals!
-        </p>
-
-        <div class="buttons">
-            <a href="frontend/pages/index.html" class="btn btn-primary">🛍️ Browse Items</a>
-            <a href="frontend/pages/login.html" class="btn btn-secondary">🔐 Login</a>
-            <a href="frontend/pages/register.html" class="btn btn-secondary">📝 Register</a>
-        </div>
-
-        <div class="features">
-            <div class="feature">
-                <h3>🔒 Secure</h3>
-                <p>Enterprise-level security with encrypted passwords and CSRF protection</p>
-            </div>
-            <div class="feature">
-                <h3>💰 Negotiate</h3>
-                <p>Make offers and negotiate prices directly with sellers</p>
-            </div>
-            <div class="feature">
-                <h3>📱 Responsive</h3>
-                <p>Works perfectly on desktop, tablet, and mobile devices</p>
-            </div>
-            <div class="feature">
-                <h3>⚡ Fast</h3>
-                <p>Quick search and filter to find exactly what you need</p>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p><strong>For Admins:</strong> <a href="frontend/pages/admin-dashboard.html" style="color: #667eea;">Admin Dashboard</a></p>
-            <p style="margin-top: 10px;">© 2026 HoneHube - Evelyn Hone College</p>
-        </div>
-    </div>
+  <div class="container">
+    <h1>💻 Honehube</h1>
+    <p>Evelyn Hone College Laptop Marketplace</p>
+    <div class="loader"></div>
+    <p style="margin-top: 30px; font-size: 1rem;">Redirecting to home page...</p>
+    <p style="font-size: 0.9rem;">
+      If you are not redirected, <a href="frontend/pages/home.html">click here</a>
+    </p>
+  </div>
+  
+  <script>
+    // Redirect after 1 second
+    setTimeout(() => {
+      window.location.href = 'frontend/pages/home.html';
+    }, 1000);
+  </script>
 </body>
 </html>
