@@ -171,6 +171,12 @@ $dbName = 'honehube';
                     
                     foreach ($statements as $statement) {
                         if (!empty($statement)) {
+                            // Replace placeholder with real hash if needed
+                            if (strpos($statement, 'TEMP_HASH') !== false) {
+                                $adminPassword = 'Admin@123';
+                                $adminHash = password_hash($adminPassword, PASSWORD_BCRYPT);
+                                $statement = str_replace('TEMP_HASH', $adminHash, $statement);
+                            }
                             $conn->exec($statement);
                         }
                     }

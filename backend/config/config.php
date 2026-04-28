@@ -44,8 +44,8 @@ define('ACCOUNT_LOCKOUT_THRESHOLD', 5); // Lock after 5 failed attempts
  * Database Connection Class
  */
 class Database {
-    private static $instance = null;
-    private $conn;
+    private static ?Database $instance = null;
+    private PDO $conn;
 
     private function __construct() {
         try {
@@ -87,12 +87,12 @@ class Database {
  */
 
 // Hash password
-function hashPassword($password) {
+function hashPassword(string $password) {
     return password_hash($password, HASH_ALGO, ['cost' => HASH_COST]);
 }
 
 // Verify password
-function verifyPassword($password, $hash) {
+function verifyPassword(string $password, string $hash) {
     return password_verify($password, $hash);
 }
 
@@ -102,12 +102,12 @@ function generateCSRFToken() {
 }
 
 // Validate CSRF token
-function validateCSRFToken($token) {
+function validateCSRFToken(string $token) {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
 // Sanitize input
-function sanitizeInput($data) {
+function sanitizeInput(string $data) {
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
@@ -115,7 +115,7 @@ function sanitizeInput($data) {
 }
 
 // Validate email
-function validateEmail($email) {
+function validateEmail(string $email) {
     return filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
@@ -137,7 +137,7 @@ function setCORSHeaders() {
 }
 
 // Send JSON response
-function sendJSON($data, $statusCode = 200) {
+function sendJSON(mixed $data, int $statusCode = 200) {
     http_response_code($statusCode);
     header('Content-Type: application/json');
     echo json_encode($data);
